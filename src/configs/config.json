@@ -1,0 +1,12 @@
+{
+    "starport_addr": "support.montagu.dide.ic.ac.uk",
+    "starport_user": "alex",
+    "starport_backup_location": "testrsync/",
+    "targets": [
+        {
+            "type": "directory",
+            "name": "test",
+            "path": "/testrsync/"
+        }
+    ]
+}

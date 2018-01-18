@@ -32,7 +32,8 @@ def with_logging(do):
 
 
 def run_rsync(settings, path):
-    cmd = ["rsync", "-r", "ssh", path, "root@{}".format(settings.starport_addr)]
+    cmd = ["rsync", "-rve", "ssh", path, "{}@{}:{}".format(settings.starport_user, settings.starport_addr,
+                                                          settings.starport_backup_location)]
     with Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
             logging.info(line.strip())
