@@ -7,6 +7,7 @@ from subprocess import Popen, PIPE
 
 from settings import load_settings, log_dir
 
+
 def ensure_dir_exists(dir_path):
     if not isdir(dir_path):
         makedirs(dir_path)
@@ -32,8 +33,8 @@ def with_logging(do):
 
 
 def run_rsync(settings, path):
-    cmd = ["rsync", "-rve", "ssh", path, "{}@{}:{}".format(settings.starport_user, settings.starport_addr,
-                                                          settings.starport_backup_location)]
+    cmd = ["rsync", "-rve", "ssh", "-i", settings.ssh_key, path,
+           "{}@{}:{}".format(settings.starport_user, settings.starport_addr, settings.starport_backup_location)]
     with Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
             logging.info(line.strip())
@@ -55,6 +56,7 @@ def run():
     for path in paths:
         logging.info("- " + path)
         run_rsync(settings, path)
+
 
 if __name__ == "__main__":
     print("Sending file to starport. Output will be logged to " + log_dir)

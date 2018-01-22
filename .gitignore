@@ -1,2 +1,5 @@
 .idea
 __pycache__
+src/etc/
+src/config/
+src/log/
