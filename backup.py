@@ -33,7 +33,7 @@ def with_logging(do):
 
 
 def run_rsync(settings, path):
-    cmd = ["rsync", "-rve", "ssh", "-i", settings.ssh_key, path,
+    cmd = ["rsync", "-rve", "ssh -i {}".format(settings.ssh_key_path), path,
            "{}@{}:{}".format(settings.starport_user, settings.starport_addr, settings.starport_backup_location)]
     with Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:

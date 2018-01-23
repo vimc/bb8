@@ -7,7 +7,7 @@ from targets import DirectoryTarget
 
 root_path = "./etc/"
 config_path = join(root_path, "config.json")
-ssh_path = join(root_path, "id_rsa")
+ssh_key_path = join(root_path, "id_rsa")
 
 log_dir = './log/'
 
@@ -20,7 +20,7 @@ class Settings:
         self.starport_addr = config["starport_addr"]
         self.starport_user = config["starport_user"]
         self.starport_backup_location = config["starport_backup_location"]
-        self.ssh_key = ssh_path
+        self.ssh_key_path = ssh_key_path
         self.targets = list(Settings.parse_target(t) for t in config["targets"])
 
     @classmethod
@@ -42,10 +42,10 @@ def get_secret(name):
 
 
 def save_private_key():
-    if not isfile(ssh_path):
+    if not isfile(ssh_key_path):
         ssh_key = get_secret("annex/id_rsa")
-        with open(ssh_path, 'a'):  # Create file if does not exist
+        with open(ssh_key_path, 'a'):  # Create file if does not exist
             pass
-        os.chmod(ssh_path, 0o600)
-        with open(ssh_path, 'w') as f:
+        os.chmod(ssh_key_path, 0o600)
+        with open(ssh_key_path, 'w') as f:
             f.write(ssh_key)
