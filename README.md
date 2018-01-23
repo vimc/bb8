@@ -32,7 +32,7 @@ requires further options.
 ### Directory
 Simplest option. Requires a `path` to a directory.
 
-### Named volume
+### Named volume TODO
 Requires the `name` of the volume.
 
 # Scripts
@@ -51,4 +51,7 @@ There are five entrypoints to the backup module. All need be run as root.
 2. `setup.sh`: This installs any dependencies, checks that a config file exists,
  then reads the private key from the vault and stores it in this repo at
 `./etc`. You will be prompted for Vault (GitHub) access token. Need to run as root.
-3. `backup.sh`: Runs a one-off backup. Output is logged to this repo at `./log/.` Need to run as root.
+3. `backup.py`: Runs a one-off backup. Output is logged to this repo at `./log/.` Need to run as root.
+4. `schedule.py`: TODO
+5. `restore.py`:  TODO
+
