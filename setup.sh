@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-#apt-get install python3-pip -y
-#pip3 install --quiet -r ${BASH_SOURCE%/*}/requirements.txt
+apt-get install python3-pip -y
 
 export VAULT_ADDR='https://support.montagu.dide.ic.ac.uk:8200'
 if [ "$VAULT_AUTH_GITHUB_TOKEN" = "" ]; then
