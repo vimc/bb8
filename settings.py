@@ -1,6 +1,6 @@
 import json
 import os
-from os.path import join, isfile
+from os.path import join, isfile, abspath
 from subprocess import check_output
 
 from targets import DirectoryTarget, NamedVolumeTarget
@@ -59,7 +59,7 @@ def save_private_key():
 
 
 def save_host_key():
-    known_hosts_path = "~/.ssh/known_hosts"
+    known_hosts_path = os.path.expanduser("~/.ssh/known_hosts")
     ssh_key = get_secret("annex/host_key")
     with open(known_hosts_path, 'a'):  # Create file if does not exist
         pass
