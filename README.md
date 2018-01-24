@@ -41,7 +41,7 @@ So that bb8 can communicate with the Starport via ssh,
  file on Starport. This is done by running `./setup_starport.sh` on the Starport. To run backups
   bb8 needs the corresponding private key and a JSON configuration file.
  When bb8 has been configured, these live in this repo at `./etc/config.json` and `./etc/id_rsa`, respectively.
-There are five entrypoints to the backup module. All need be run as root.
+There are five entrypoints to the backup module.
 
 1. `setup_starport.sh`: To be run on Starport. So that bb8 can communicate with the Starport via ssh,
  we first need to generate a key pair which
