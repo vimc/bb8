@@ -11,6 +11,12 @@ vault write secret/annex/id_rsa value=@$KEY_PATH/id_rsa
 vault write secret/annex/id_rsa.pub value=@$KEY_PATH/id_rsa.pub
 
 cat $KEY_PATH/id_rsa.pub >> ~/.ssh/authorized_keys
-rm -r $KEY_PATH
+
+function cleanup {
+    set +e
+    rm -r $KEY_PATH
+}
+trap cleanup EXIT
+
 
 echo "Setup of Starport complete. You can now set up production"
