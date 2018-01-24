@@ -46,7 +46,7 @@ def run_rsync(settings, path):
         for line in p.stderr:
             logging.error(line.strip())
 
-    if p.returncode not in [0, 1]:
+    if p.returncode != 0:
         raise Exception("rsync returned error code {}".format(p.returncode))
 
 
