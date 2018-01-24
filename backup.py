@@ -33,8 +33,9 @@ def with_logging(do):
 
 
 def run_rsync(settings, path):
+    starport = settings.starport
     cmd = ["rsync", "-rve", "ssh -i {}".format(settings.ssh_key_path), path,
-           "{}@{}:{}".format(settings.starport_user, settings.starport_addr, settings.starport_backup_location)]
+           "{}@{}:{}".format(starport["user"], starport["addr"], starport["backup_location"])]
     with Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
             logging.info(line.strip())
@@ -47,11 +48,11 @@ def run_rsync(settings, path):
 
 def run():
     settings = load_settings()
-    logging.info("Backing up to {}: ".format(settings.starport_addr))
+    logging.info("Backing up to {}: ".format(settings.starport["addr"]))
     for target in settings.targets:
         logging.info("- " + target.id)
 
-    logging.info("The following paths will be backed up:")
+    logging.info("The following paths are being backed up:")
     paths = list(t.path for t in settings.targets)
     for path in paths:
         logging.info("- " + path)
@@ -59,5 +60,5 @@ def run():
 
 
 if __name__ == "__main__":
-    print("Sending file to starport. Output will be logged to " + log_dir)
+    print("Backing up targets to starport. Output will be logged to " + log_dir)
     with_logging(run)

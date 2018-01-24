@@ -17,9 +17,7 @@ class Settings:
         with open(config_path, 'r') as f:
             config = json.load(f)
 
-        self.starport_addr = config["starport_addr"]
-        self.starport_user = config["starport_user"]
-        self.starport_backup_location = config["starport_backup_location"]
+        self.starport = config["starport"]
         self.ssh_key_path = ssh_key_path
         self.targets = list(Settings.parse_target(t) for t in config["targets"])
 
