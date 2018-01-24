@@ -2,7 +2,7 @@
 import logging
 from datetime import date
 from os import makedirs
-from os.path import join, isdir, abspath
+from os.path import join, isdir, abspath, expanduser
 from subprocess import Popen, PIPE
 
 from settings import load_settings, log_dir
@@ -61,6 +61,7 @@ def run_rsync_volume(settings, source_volume):
 
     cmd = ["docker", "run", "--rm", "-i", "-t",
            "-v", "{}:/{}".format(source_volume, source_volume),
+           "-v", "{}:{}".format(expanduser("~/.ssh/known_hosts"), "/root/.ssh/known_hosts"),
            "-v", "{}:{}".format(abspath(settings.ssh_key_path), docker_ssh_key_path),
            "instrumentisto/rsync-ssh"]
 
