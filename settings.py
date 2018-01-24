@@ -56,3 +56,12 @@ def save_private_key():
         os.chmod(ssh_key_path, 0o600)
         with open(ssh_key_path, 'w') as f:
             f.write(ssh_key)
+
+
+def save_host_key():
+    known_hosts_path = "~/.ssh/known_hosts"
+    ssh_key = get_secret("annex/host_key")
+    with open(known_hosts_path, 'a'):  # Create file if does not exist
+        pass
+    with open(known_hosts_path, 'a') as f:
+        f.write(ssh_key)
