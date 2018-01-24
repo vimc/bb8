@@ -76,18 +76,14 @@ def run_rsync_volume(settings, source_volume):
 def run_backup():
     settings = load_settings()
     logging.info("Backing up to {}: ".format(settings.starport["addr"]))
-    for target in settings.directory_targets:
-        logging.info("- " + target.id)
-    for target in settings.volume_targets:
-        logging.info("- " + target.id)
 
-    logging.info("The following paths are being backed up:")
+    logging.info("The following directories are being backed up:")
     paths = list(t.path for t in settings.directory_targets)
     for path in paths:
         logging.info("- " + path)
         run_rsync(settings, path)
 
-    logging.info("The following volumes are being backed up:")
+    logging.info("The following named volumes are being backed up:")
     names = list(t.name for t in settings.volume_targets)
     for name in names:
         logging.info("- " + name)
@@ -95,5 +91,5 @@ def run_backup():
 
 
 if __name__ == "__main__":
-    print("Backing up targets to starport. Output will be logged to " + log_dir)
+    print("Backing up targets to Starport. Output will be logged to " + log_dir)
     with_logging(run_backup)
