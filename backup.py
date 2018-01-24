@@ -34,6 +34,10 @@ def with_logging(do):
 
 def run_rsync(settings, path):
     starport = settings.starport
+    # rsync options:
+    # -v = verbose - give info about what files are being transferred and a brief summary at the end
+    # -r = copy directories recursively
+    # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
     cmd = ["rsync", "-rve", "ssh -i {}".format(settings.ssh_key_path), path,
            "{}@{}:{}".format(starport["user"], starport["addr"], starport["backup_location"])]
     with Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p:
