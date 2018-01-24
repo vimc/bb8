@@ -42,9 +42,7 @@ def rsync_cmd(ssh_key_path, target_path, starport):
             "{}@{}:{}".format(starport["user"], starport["addr"], starport["backup_location"])]
 
 
-def run_rsync(settings, path):
-    starport = settings.starport
-    cmd = rsync_cmd(settings.ssh_key_path, path, starport)
+def run_cmd_with_logging(cmd):
     with Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p:
         for line in p.stdout:
             logging.info(line.strip())
@@ -53,6 +51,12 @@ def run_rsync(settings, path):
 
     if p.returncode != 0:
         raise Exception("rsync returned error code {}".format(p.returncode))
+
+
+def run_rsync(settings, path):
+    starport = settings.starport
+    cmd = rsync_cmd(settings.ssh_key_path, path, starport)
+    run_cmd_with_logging(cmd)
 
 
 def run_rsync_volume(settings, source_volume):
@@ -66,15 +70,7 @@ def run_rsync_volume(settings, source_volume):
            "instrumentisto/rsync-ssh"]
 
     cmd.extend(rsync_cmd(docker_ssh_key_path, source_volume, starport))
-
-    with Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p:
-        for line in p.stdout:
-            logging.info(line.strip())
-        for line in p.stderr:
-            logging.error(line.strip())
-
-    if p.returncode != 0:
-        raise Exception("rsync returned error code {}".format(p.returncode))
+    run_cmd_with_logging(cmd)
 
 
 def run_backup():
