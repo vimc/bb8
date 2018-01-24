@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-source vault_auth.sh
+source ${BASH_SOURCE%/*}/vault_auth.sh
 
 KEY_PATH=ssh_key
 
