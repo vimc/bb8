@@ -3,7 +3,7 @@ import os
 from os.path import join, isfile
 from subprocess import check_output
 
-from targets import DirectoryTarget
+from targets import DirectoryTarget, NamedVolumeTarget
 
 root_path = "./etc/"
 config_path = join(root_path, "config.json")
@@ -19,15 +19,24 @@ class Settings:
 
         self.starport = config["starport"]
         self.ssh_key_path = ssh_key_path
-        self.targets = list(Settings.parse_target(t) for t in config["targets"])
+        self.directory_targets = list(Settings.parse_directory_target(t) for t in config["directory_targets"])
+        self.volume_targets = list(Settings.parse_volume_target(t) for t in config["volume_targets"])
 
     @classmethod
-    def parse_target(cls, data):
-        t = data["type"]
-        if t == "directory":
-            return DirectoryTarget(data["path"])
+    def parse_directory_target(cls, data):
+        p = data["path"]
+        if p is not None:
+            return DirectoryTarget(p)
         else:
-            raise Exception("Unsupported target type: " + t)
+            raise Exception("Directory targets must have a path specified")
+
+    @classmethod
+    def parse_volume_target(cls, data):
+        n = data["name"]
+        if n is not None:
+            return NamedVolumeTarget(n)
+        else:
+            raise Exception("Named volume targets must have a name specified")
 
 
 def load_settings():
