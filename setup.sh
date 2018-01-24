@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-#apt-get install python3-pip -y
+dpkg -s python3-pip &>/dev/null || \
+{ echo "You must install Python3 first. Run apt-get install python3-pip -y as root."; exit 0; }
 
 source vault_auth.sh
 
