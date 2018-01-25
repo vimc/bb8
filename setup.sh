@@ -3,6 +3,7 @@ set -e
 
 dpkg -s python3-pip &>/dev/null || \
 { echo "You must install Python3 first. Run as root: apt-get install python3-pip -y"; exit 0; }
+pip3 install --user -r requirements.txt
 
 source ${BASH_SOURCE%/*}/vault_auth.sh
 

@@ -55,6 +55,6 @@ There are five entrypoints to the backup module.
 4. `backup.sh`: Creates a lock directory and runs a one-off backup, then removes lock directory.
  If a lock directory exists and there is a running process, exits without doing anything.
   If a lock file exists and no running process, removes the lock directory.
-4. `schedule.py`: TODO
+4. `schedule.py`: Creates a cron job that runs backup.py every hour and logs to `./log`. Must be run as root.
 5. `restore.py`:  TODO
 
