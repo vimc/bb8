@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-apt-get install python3-pip -y
+dpkg -s python3-pip &>/dev/null || \
+{ echo "You must install Python3 first. Run as root: apt-get install python3-pip -y"; exit 0; }
 
-export VAULT_ADDR='https://support.montagu.dide.ic.ac.uk:8200'
-if [ "$VAULT_AUTH_GITHUB_TOKEN" = "" ]; then
-    echo -n "Please provide your GitHub personal access token for the vault: "
-    read -s token
-    echo ""
-    export VAULT_AUTH_GITHUB_TOKEN=${token}
-fi
-vault auth --method=github
+source ${BASH_SOURCE%/*}/vault_auth.sh
 
 ${BASH_SOURCE%/*}/setup.py
 
