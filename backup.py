@@ -59,7 +59,7 @@ def run_rsync(settings, path):
     run_cmd_with_logging(cmd)
 
 
-def run_rsync_volume(settings, source_volume):
+def run_rsync_from_container(settings, source_volume):
     starport = settings.starport
     docker_ssh_key_path = "/etc/id_rsa"
 
@@ -87,7 +87,7 @@ def run_backup():
     names = list(t.name for t in settings.volume_targets)
     for name in names:
         logging.info("- " + name)
-        run_rsync_volume(settings, name)
+        run_rsync_from_container(settings, name)
 
 
 if __name__ == "__main__":
