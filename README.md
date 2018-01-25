@@ -10,9 +10,11 @@ Here's a sample configuration file. It should be mostly self explanatory.
 
 ```
 {
-    "starport_addr": "annex.montagu.dide.ic.ac.uk",
-    "starport_user": "montagu",
-    "starport_backup_location": "testrsync/",
+    "starport": {
+        "addr": "annex.montagu.dide.ic.ac.uk",
+        "user": "montagu",
+        "backup_location": "testrsync/"
+    },
     "targets": [
         {
             "type": "directory",
