@@ -4,9 +4,11 @@ from datetime import date
 from os import makedirs
 from os.path import join, isdir, abspath, expanduser
 from subprocess import Popen, PIPE
+import docker
 
 from settings import load_settings, log_dir
-from subprocess import run
+
+client = docker.from_env()
 
 
 def ensure_dir_exists(dir_path):
@@ -38,8 +40,10 @@ def rsync_cmd(ssh_key_path, target_path, starport):
     # -v = verbose - give info about what files are being transferred and a brief summary at the end
     # -r = copy directories recursively
     # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
-    return ["rsync", "-rve", "ssh -i {}".format(ssh_key_path), target_path,
-            "{}@{}:{}".format(starport["user"], starport["addr"], starport["backup_location"])]
+    args = ["rsync", "-rv", "-e", "ssh -o IdentityFile={} -o IdentitiesOnly=yes".format(ssh_key_path),
+            target_path,"{}@{}:{}".format(starport["user"], starport["addr"], starport["backup_location"])]
+    print(args)
+    return args
 
 
 def run_cmd_with_logging(cmd):
@@ -55,22 +59,26 @@ def run_cmd_with_logging(cmd):
 
 def run_rsync(settings, path):
     starport = settings.starport
-    cmd = rsync_cmd(settings.ssh_key_path, path, starport)
+    cmd = rsync_cmd(abspath(settings.ssh_key_path), path, starport)
     run_cmd_with_logging(cmd)
 
 
 def run_rsync_from_container(settings, source_volume):
     starport = settings.starport
-    docker_ssh_key_path = "/etc/id_rsa"
+    docker_ssh_key_path = "/etc/bb8/id_rsa"
 
-    cmd = ["docker", "run", "--rm", "-i", "-t",
-           "-v", "{}:/{}".format(source_volume, source_volume),
-           "-v", "{}:{}".format(expanduser("~/.ssh/known_hosts"), "/root/.ssh/known_hosts"),
-           "-v", "{}:{}".format(abspath(settings.ssh_key_path), docker_ssh_key_path),
-           "instrumentisto/rsync-ssh"]
+    cmd = rsync_cmd(docker_ssh_key_path, source_volume, starport)
+    volumes = {expanduser("~/.ssh/known_hosts"): {"bind": "/root/.ssh/known_hosts", "mode": "ro"},
+               abspath(settings.ssh_key_path): {"bind": docker_ssh_key_path, "mode": "ro"},
+               source_volume: {"bind": "/{}".format(source_volume), "mode": "ro"}}
 
-    cmd.extend(rsync_cmd(docker_ssh_key_path, source_volume, starport))
-    run_cmd_with_logging(cmd)
+    container = client.containers.run("instrumentisto/rsync-ssh", command=cmd, volumes=volumes,
+                                      detach=True)
+
+    for log in container.logs(stream=True, stderr=True, stdout=False):
+        logging.error(log.strip())
+    for log in container.logs(stream=True, stderr=False, stdout=True):
+        logging.info(log.strip())
 
 
 def run_backup():
