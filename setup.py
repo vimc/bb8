@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from os.path import isfile
 
-from settings import config_path, root_path, save_private_key
+from settings import config_path, root_path, save_private_key, save_host_key
 
 if __name__ == "__main__":
     if not isfile(config_path):
@@ -12,3 +12,4 @@ if __name__ == "__main__":
 
     print("Obtaining secrets from the vault. If you are not authenticated with the vault, this will fail.")
     save_private_key()
+    save_host_key()

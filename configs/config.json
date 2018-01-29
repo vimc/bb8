@@ -4,11 +4,14 @@
         "user": "montagu",
         "backup_location": "testrsync/"
     },
-    "targets": [
+    "directory_targets": [
         {
-            "type": "directory",
-            "name": "test",
             "path": "/testrsync/"
+        }
+    ],
+    "volume_targets": [
+        {
+            "name": "test"
         }
     ]
 }
