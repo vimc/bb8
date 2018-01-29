@@ -11,11 +11,6 @@ class DirectoryTarget:
     def id(self):
         return "Directory: " + self.path
 
-    def before_restore(self):
-        if not isdir(self.path):
-            print("Creating empty directory " + self.path)
-            makedirs(self.path)
-
 
 class NamedVolumeTarget:
     def __init__(self, name):
@@ -32,8 +27,3 @@ class NamedVolumeTarget:
         ).stdout
         names = text.split('\n')
         return self.name in names
-
-    def before_restore(self):
-        if not self._volume_exists():
-            print("Creating docker volume with name '{}'".format(self.name))
-            run(["docker", "volume", "create", "--name", self.name], stdout=PIPE)
