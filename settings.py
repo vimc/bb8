@@ -11,6 +11,8 @@ ssh_key_path = join(root_path, "id_rsa")
 
 log_dir = './log/'
 
+docker_ssh_key_path = "/etc/bb8/id_rsa"
+
 
 class Settings:
     def __init__(self):
