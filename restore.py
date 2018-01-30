@@ -32,15 +32,19 @@ def run_backup():
     logging.info("Backing up to {}: ".format(settings.starport["addr"]))
 
     logging.info("The following directories are being restored:")
-    paths = list(t.path for t in settings.directory_targets)
-    for path in paths:
+    targets = list(t for t in settings.directory_targets)
+    for target in targets:
+        path = target.path
         logging.info("- " + path)
+        target.before_restore()
         run_rsync(settings, path)
 
     logging.info("The following named volumes are being restored:")
-    names = list(t.name for t in settings.volume_targets)
-    for name in names:
+    targets = list(t for t in settings.volume_targets)
+    for target in targets:
+        name = target.name
         logging.info("- " + name)
+        target.before_restore()
         cmd = rsync_from_starport(docker_ssh_key_path, name, settings.starport)
         run_rsync_from_container(settings, name, cmd)
 

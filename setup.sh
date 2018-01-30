@@ -14,7 +14,7 @@ fi
 
 echo "-------------------------------------------"
 echo "Running setup.py:"
-su -c "source ${BASH_SOURCE%/*}/vault_auth.sh && ${BASH_SOURCE%/*}/setup.py bb8"
+source ${BASH_SOURCE%/*}/vault_auth.sh && ${BASH_SOURCE%/*}/setup.py
 
 echo "-------------------------------------------"
 echo "Setup complete. To schedule backups, run ./schedule.py"
