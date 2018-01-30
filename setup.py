@@ -5,6 +5,8 @@ from shutil import copy
 
 from settings import config_path, root_path, save_private_key, save_host_key
 
+configs_source = './configs'
+
 
 def get_user_config_choice():
     options = listdir(configs_source)
@@ -25,7 +27,6 @@ if __name__ == "__main__":
     if not isdir(root_path):
         mkdir(root_path)
     if not isfile(config_path):
-        configs_source = './configs'
         print("Missing config files in {}.".format(root_path))
         path = get_user_config_choice()
         print("Copying {} to {}".format(path, root_path))
