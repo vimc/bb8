@@ -3,7 +3,7 @@ from os.path import isfile, isdir, join
 from os import listdir, mkdir
 from shutil import copy
 
-from settings import config_path, root_path, save_private_key
+from settings import config_path, root_path, save_private_key, save_host_key
 
 
 def get_user_config_choice():
@@ -33,3 +33,4 @@ if __name__ == "__main__":
 
     print("Obtaining secrets from the vault. If you are not authenticated with the vault, this will fail.")
     save_private_key()
+    save_host_key()

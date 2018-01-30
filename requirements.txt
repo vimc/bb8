@@ -1,0 +1,2 @@
+python-crontab==2.2.8
+docker==2.7.0
