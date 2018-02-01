@@ -4,30 +4,33 @@ from os.path import abspath
 import docker
 
 from logger import with_logging, run_cmd_with_logging
-from settings import load_settings, log_dir, docker_ssh_key_path
+from settings import load_settings, log_dir, docker_ssh_key_path, docker_known_hosts_path
 from docker_rsync import run_rsync_from_container
 
 client = docker.from_env()
 
 
-def rsync_from_starport(ssh_key_path, target_path, starport):
+def rsync_from_starport(ssh_key_path, known_hosts_path, target_path, starport):
     # rsync options:
     # -v = verbose - give info about what files are being transferred and a brief summary at the end
     # -r = copy directories recursively
     # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
-    args = ["rsync", "-rv", "-e", "ssh -o IdentityFile={} -o IdentitiesOnly=yes".format(ssh_key_path),
-            "{}@{}:{}".format(starport["user"], starport["addr"], starport["backup_location"]), target_path]
-    print(args)
+    ssh_cmd = "ssh -o IdentityFile={} -o IdentitiesOnly=yes -o UserKnownHostsFile={}" \
+        .format(ssh_key_path, known_hosts_path)
+    source_path = "{}@{}:{}".format(starport["user"],
+                                    starport["addr"],
+                                    starport["backup_location"])
+    args = ["rsync", "-rv", "-e", ssh_cmd, source_path, target_path]
     return args
 
 
 def run_rsync(settings, path):
     starport = settings.starport
-    cmd = rsync_from_starport(abspath(settings.ssh_key_path), path, starport)
+    cmd = rsync_from_starport(abspath(settings.known_hosts_path), abspath(settings.ssh_key_path), path, starport)
     run_cmd_with_logging(cmd)
 
 
-def run_backup():
+def run_restore():
     settings = load_settings()
     logging.info("Backing up to {}: ".format(settings.starport["addr"]))
 
@@ -45,10 +48,10 @@ def run_backup():
         name = target.name
         logging.info("- " + name)
         target.before_restore()
-        cmd = rsync_from_starport(docker_ssh_key_path, name, settings.starport)
+        cmd = rsync_from_starport(docker_ssh_key_path, docker_known_hosts_path, name, settings.starport)
         run_rsync_from_container(settings, name, cmd)
 
 
 if __name__ == "__main__":
-    print("Backing up targets to Starport. Output will be logged to " + log_dir)
-    with_logging(run_backup)
+    print("Restoring targets from Starport. Output will be logged to " + log_dir)
+    with_logging(run_restore)

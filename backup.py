@@ -1,29 +1,40 @@
 #!/usr/bin/env python3
 import logging
-from os.path import abspath
+from datetime import date
+from os import makedirs
+from os.path import join, isdir, abspath
+from subprocess import Popen, PIPE
 import docker
 
 from logger import with_logging, run_cmd_with_logging
-from settings import load_settings, log_dir, docker_ssh_key_path
+from settings import load_settings, log_dir, docker_ssh_key_path, docker_known_hosts_path
 from docker_rsync import run_rsync_from_container
 
 client = docker.from_env()
 
 
-def rsync_to_starport(ssh_key_path, target_path, starport):
+def ensure_dir_exists(dir_path):
+    if not isdir(dir_path):
+        makedirs(dir_path)
+
+
+def rsync_cmd(ssh_key_path, known_hosts_path, target_path, starport):
     # rsync options:
     # -v = verbose - give info about what files are being transferred and a brief summary at the end
     # -r = copy directories recursively
     # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
-    args = ["rsync", "-rv", "-e", "ssh -o IdentityFile={} -o IdentitiesOnly=yes".format(ssh_key_path),
-            target_path,"{}@{}:{}".format(starport["user"], starport["addr"], starport["backup_location"])]
-    print(args)
+    ssh_cmd = "ssh -o IdentityFile={} -o IdentitiesOnly=yes -o UserKnownHostsFile={}" \
+        .format(ssh_key_path, known_hosts_path)
+    destination_path = "{}@{}:{}".format(starport["user"],
+                                         starport["addr"],
+                                         starport["backup_location"])
+    args = ["rsync", "-rv", "-e", ssh_cmd, target_path, destination_path]
     return args
 
 
 def run_rsync(settings, path):
     starport = settings.starport
-    cmd = rsync_to_starport(abspath(settings.ssh_key_path), path, starport)
+    cmd = rsync_cmd(abspath(settings.ssh_key_path), abspath(settings.known_hosts_path), path, starport)
     run_cmd_with_logging(cmd)
 
 
@@ -41,7 +52,7 @@ def run_backup():
     names = list(t.name for t in settings.volume_targets)
     for name in names:
         logging.info("- " + name)
-        cmd = rsync_to_starport(docker_ssh_key_path, name, settings.starport)
+        cmd = rsync_cmd(docker_ssh_key_path, docker_known_hosts_path, name, settings.starport)
         run_rsync_from_container(settings, name, cmd)
 
 
