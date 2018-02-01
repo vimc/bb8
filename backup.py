@@ -42,7 +42,6 @@ def rsync_cmd(ssh_key_path, known_hosts_path, target_path, starport):
     # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
     ssh_cmd = "ssh -o IdentityFile={} -o IdentitiesOnly=yes -o UserKnownHostsFile={}" \
         .format(ssh_key_path, known_hosts_path)
-    print(known_hosts_path)
     destination_path = "{}@{}:{}".format(starport["user"],
                                          starport["addr"],
                                          starport["backup_location"])
