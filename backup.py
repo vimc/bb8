@@ -8,7 +8,7 @@ import docker
 
 from logger import with_logging, run_cmd_with_logging
 from settings import load_settings, log_dir, docker_ssh_key_path, docker_known_hosts_path
-from docker_rsync import run_rsync_from_container
+from docker_rsync import backup_volume
 
 client = docker.from_env()
 
@@ -28,7 +28,7 @@ def rsync_cmd(ssh_key_path, known_hosts_path, target_path, starport):
     destination_path = "{}@{}:{}".format(starport["user"],
                                          starport["addr"],
                                          starport["backup_location"])
-    args = ["rsync", "-rv", "-e", ssh_cmd, target_path, destination_path]
+    args = ["rsync", "-rv", "-e", ssh_cmd, "--relative", target_path, destination_path]
     return args
 
 
@@ -53,7 +53,7 @@ def run_backup():
     for name in names:
         logging.info("- " + name)
         cmd = rsync_cmd(docker_ssh_key_path, docker_known_hosts_path, name, settings.starport)
-        run_rsync_from_container(settings, name, cmd)
+        backup_volume(settings, name, cmd)
 
 
 if __name__ == "__main__":

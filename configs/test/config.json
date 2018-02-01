@@ -2,11 +2,12 @@
     "starport": {
         "addr": "annex.montagu.dide.ic.ac.uk",
         "user": "montagu",
-        "backup_location": "testrsync/"
+        "backup_location": "testrsync/",
+        "restore_location": "/var/lib/bb8/restore"
     },
     "directory_targets": [
         {
-            "path": "/testrsync/"
+            "path": "/directorytarget/"
         }
     ],
     "volume_targets": [
