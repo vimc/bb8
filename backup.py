@@ -46,7 +46,6 @@ def rsync_cmd(ssh_key_path, known_hosts_path, target_path, starport):
                                          starport["addr"],
                                          starport["backup_location"])
     args = ["rsync", "-rv", "-e", ssh_cmd, target_path, destination_path]
-    print(args)
     return args
 
 
