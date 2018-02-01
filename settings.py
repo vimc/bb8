@@ -61,8 +61,9 @@ def save_private_key():
 
 
 def save_host_key():
-    ssh_key = get_secret("annex/host_key")
+    host_key = get_secret("annex/host_key")
+    settings = load_settings()
     with open(known_hosts_path, 'a'):  # Create file if does not exist
         pass
     with open(known_hosts_path, 'a') as f:
-        f.write(ssh_key)
+        f.write("{} {}".format(settings.starport["addr"], host_key))
