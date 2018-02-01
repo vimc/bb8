@@ -18,6 +18,7 @@ if ! id -u bb8 > /dev/null 2>&1; then
     # set bb8 home dir
     mkdir /var/lib/bb8/.ssh
     usermod -m -d /var/lib/bb8 bb8
+    chown -R bb8:bb8 /var/lib/bb8
 
     # add to docker group
     usermod -aG docker bb8
