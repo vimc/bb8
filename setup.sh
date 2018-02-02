@@ -22,7 +22,7 @@ if ! id -u bb8 > /dev/null 2>&1; then
     usermod -aG docker bb8
 fi
 
-# give bb8 group owernship of this dir
+# give bb8 group ownership of this dir
 chgrp -R bb8 $HERE
 
 echo "-------------------------------------------"

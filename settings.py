@@ -12,8 +12,6 @@ known_hosts_path = join(root_path, "known_hosts")
 
 log_dir = './log/'
 
-docker_ssh_key_path = "/etc/bb8/id_rsa"
-docker_known_hosts_path = "/root/.ssh/known_hosts"
 
 class Settings:
     def __init__(self):
@@ -65,7 +63,8 @@ def save_private_key():
 def save_host_key():
     host_key = get_secret("annex/host_key")
     settings = load_settings()
+    starport = settings.starport
     with open(known_hosts_path, 'a'):  # Create file if does not exist
         pass
     with open(known_hosts_path, 'a') as f:
-        f.write("{} {}".format(settings.starport["addr"], host_key))
+        f.write("{},{} {}".format(starport["ip"], starport["addr"], host_key))
