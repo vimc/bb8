@@ -11,14 +11,14 @@ from docker_rsync import restore_volume
 def run_restore():
     settings = load_settings()
     starport = settings.starport
-    logging.info("Restoring from {}: ".format(settings.starport["addr"]))
+    logging.info("Restoring from {}: ".format(starport["addr"]))
 
     logging.info("The following directories are being restored:")
     targets = list(t for t in settings.directory_targets)
     for target in targets:
         path = target.path
         logging.info("- " + path)
-        restore_volume(settings, path, starport)
+        restore_volume(settings, path)
 
     logging.info("The following named volumes are being restored:")
     targets = list(t for t in settings.volume_targets)
@@ -26,7 +26,7 @@ def run_restore():
         name = target.name
         logging.info("- " + name)
         target.before_restore()
-        restore_volume(settings, name, starport)
+        restore_volume(settings, name)
 
 
 if __name__ == "__main__":
