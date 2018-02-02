@@ -21,24 +21,17 @@ class Settings:
         self.starport = config["starport"]
         self.ssh_key_path = ssh_key_path
         self.known_hosts_path = known_hosts_path
-        self.directory_targets = list(Settings.parse_directory_target(t) for t in config["directory_targets"])
-        self.volume_targets = list(Settings.parse_volume_target(t) for t in config["volume_targets"])
+        self.targets = list(Settings.parse_target(t) for t in config["targets"])
 
     @classmethod
-    def parse_directory_target(cls, data):
-        p = data["path"]
-        if p is not None:
-            return DirectoryTarget(p)
+    def parse_target(cls, data):
+        t = data["type"]
+        if t == "directory":
+            return DirectoryTarget(data["path"])
+        elif t == "named_volume":
+            return NamedVolumeTarget(data["name"])
         else:
-            raise Exception("Directory targets must have a path specified")
-
-    @classmethod
-    def parse_volume_target(cls, data):
-        n = data["name"]
-        if n is not None:
-            return NamedVolumeTarget(n)
-        else:
-            raise Exception("Named volume targets must have a name specified")
+            raise Exception("Unsupported target type: " + t)
 
 
 def load_settings():

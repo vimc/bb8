@@ -14,17 +14,10 @@ def run_backup():
     starport = settings.starport
     logging.info("Backing up to {}: ".format(starport["addr"]))
 
-    logging.info("The following directories are being backed up:")
-    paths = list(t.path for t in settings.directory_targets)
-    for path in paths:
-        logging.info("- " + path)
-        backup_volume(settings, path)
-
-    logging.info("The following named volumes are being backed up:")
-    names = list(t.name for t in settings.volume_targets)
-    for name in names:
-        logging.info("- " + name)
-        backup_volume(settings, name)
+    targets = list(t for t in settings.targets)
+    for target in targets:
+        logging.info("- " + target.id)
+        backup_volume(settings, target.name)
 
 
 if __name__ == "__main__":

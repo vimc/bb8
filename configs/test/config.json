@@ -3,17 +3,16 @@
         "addr": "annex.montagu.dide.ic.ac.uk",
         "ip": "129.31.26.49",
         "user": "montagu",
-        "backup_location": "testrsync/",
-        "restore_location": "/var/lib/bb8/restore"
+        "backup_location": "testrsync/"
     },
-    "directory_targets": [
+    "targets": [
         {
-            "path": "/directorytarget/"
-        }
-    ],
-    "volume_targets": [
+          "path": "/directorytarget/",
+          "type": "directory"
+        },
         {
-            "name": "test"
+          "name": "test_volume",
+          "type": "named_volume"
         }
     ]
 }
