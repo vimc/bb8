@@ -12,7 +12,7 @@ echo "-------------------------------------------"
 echo "Installing bb8 user and group"
 
 if ! id -u bb8 > /dev/null 2>&1; then
-    useradd bb8 -d /var/lib/bb8
+    useradd bb8 -U -d /var/lib/bb8
     password=$(vault read --field password secret/backup/bb8/user)
     echo "bb8:$password" | chpasswd
 
@@ -21,9 +21,6 @@ if ! id -u bb8 > /dev/null 2>&1; then
     # add to docker group
     usermod -aG docker bb8
 fi
-
-# add bb8 user to bb8 group
-usermod -aG bb8 bb8
 
 # give bb8 group owernship of this dir
 chgrp -R bb8 $HERE
