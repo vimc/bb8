@@ -6,6 +6,7 @@ from subprocess import Popen, PIPE
 
 from settings import log_dir
 
+
 def ensure_dir_exists(dir_path):
     if not isdir(dir_path):
         makedirs(dir_path)
