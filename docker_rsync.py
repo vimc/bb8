@@ -35,10 +35,10 @@ def restore_volume(settings, local_volume, starport):
                abspath(settings.ssh_key_path): {"bind": "/root/.ssh/id_rsa", "mode": "ro"},
                local_volume: {"bind": "{}".format(mounted_volume), "mode": "rw"}}
 
-    remote_path = "{}@{}:{}{}".format(starport["user"],
-                                      starport["addr"],
-                                      starport["backup_location"],
-                                      local_volume)
+    remote_path = "{}@{}:{}{}/".format(starport["user"],
+                                       starport["addr"],
+                                       starport['backup_location'],
+                                       local_volume)
     cmd = ["rsync", "-rv", "-e", "ssh", remote_path, mounted_volume]
     container = client.containers.run("instrumentisto/rsync-ssh", command=cmd, volumes=volumes,
                                       detach=True)
