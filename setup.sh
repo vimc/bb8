@@ -12,11 +12,10 @@ echo "-------------------------------------------"
 echo "Installing bb8 user and group"
 
 if ! id -u bb8 > /dev/null 2>&1; then
-    useradd bb8 -d /usr/lib/bb8
+    useradd bb8 -d /var/lib/bb8
     password=$(vault read --field password secret/backup/bb8/user)
     echo "bb8:$password" | chpasswd
 
-    # Perhaps defer until python?
     mkdir -p /var/lib/bb8/.ssh
 
     # add to docker group
