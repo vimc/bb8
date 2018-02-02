@@ -2,7 +2,7 @@
 import logging
 from datetime import date
 from os import makedirs
-from os.path import join, isdir, abspath, expanduser
+from os.path import join, isdir, abspath
 from subprocess import Popen, PIPE
 import docker
 
@@ -35,14 +35,17 @@ def with_logging(do):
         exit(-1)
 
 
-def rsync_cmd(ssh_key_path, target_path, starport):
+def rsync_cmd(ssh_key_path, known_hosts_path, target_path, starport):
     # rsync options:
     # -v = verbose - give info about what files are being transferred and a brief summary at the end
     # -r = copy directories recursively
     # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
-    args = ["rsync", "-rv", "-e", "ssh -o IdentityFile={} -o IdentitiesOnly=yes".format(ssh_key_path),
-            target_path,"{}@{}:{}".format(starport["user"], starport["addr"], starport["backup_location"])]
-    print(args)
+    ssh_cmd = "ssh -o IdentityFile={} -o IdentitiesOnly=yes -o UserKnownHostsFile={}" \
+        .format(ssh_key_path, known_hosts_path)
+    destination_path = "{}@{}:{}".format(starport["user"],
+                                         starport["addr"],
+                                         starport["backup_location"])
+    args = ["rsync", "-rv", "-e", ssh_cmd, target_path, destination_path]
     return args
 
 
@@ -59,16 +62,17 @@ def run_cmd_with_logging(cmd):
 
 def run_rsync(settings, path):
     starport = settings.starport
-    cmd = rsync_cmd(abspath(settings.ssh_key_path), path, starport)
+    cmd = rsync_cmd(abspath(settings.ssh_key_path), abspath(settings.known_hosts_path), path, starport)
     run_cmd_with_logging(cmd)
 
 
 def run_rsync_from_container(settings, source_volume):
     starport = settings.starport
     docker_ssh_key_path = "/etc/bb8/id_rsa"
+    docker_known_hosts_path="/root/.ssh/known_hosts"
 
-    cmd = rsync_cmd(docker_ssh_key_path, source_volume, starport)
-    volumes = {expanduser("~/.ssh/known_hosts"): {"bind": "/root/.ssh/known_hosts", "mode": "ro"},
+    cmd = rsync_cmd(docker_ssh_key_path, docker_known_hosts_path, source_volume, starport)
+    volumes = {abspath(settings.known_hosts_path): {"bind": "/root/.ssh/known_hosts", "mode": "ro"},
                abspath(settings.ssh_key_path): {"bind": docker_ssh_key_path, "mode": "ro"},
                source_volume: {"bind": "/{}".format(source_volume), "mode": "ro"}}
 

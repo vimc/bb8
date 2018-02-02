@@ -1,6 +1,6 @@
 import json
 import os
-from os.path import join, isfile, abspath
+from os.path import join, isfile
 from subprocess import check_output
 
 from targets import DirectoryTarget, NamedVolumeTarget
@@ -8,6 +8,7 @@ from targets import DirectoryTarget, NamedVolumeTarget
 root_path = "./etc/"
 config_path = join(root_path, "config.json")
 ssh_key_path = join(root_path, "id_rsa")
+known_hosts_path = join(root_path, "known_hosts")
 
 log_dir = './log/'
 
@@ -19,6 +20,7 @@ class Settings:
 
         self.starport = config["starport"]
         self.ssh_key_path = ssh_key_path
+        self.known_hosts_path = known_hosts_path
         self.directory_targets = list(Settings.parse_directory_target(t) for t in config["directory_targets"])
         self.volume_targets = list(Settings.parse_volume_target(t) for t in config["volume_targets"])
 
@@ -59,9 +61,9 @@ def save_private_key():
 
 
 def save_host_key():
-    known_hosts_path = os.path.expanduser("~/.ssh/known_hosts")
-    ssh_key = get_secret("annex/host_key")
+    host_key = get_secret("annex/host_key")
+    settings = load_settings()
     with open(known_hosts_path, 'a'):  # Create file if does not exist
         pass
     with open(known_hosts_path, 'a') as f:
-        f.write(ssh_key)
+        f.write("{} {}".format(settings.starport["addr"], host_key))
