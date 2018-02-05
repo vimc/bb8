@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from os.path import join
-from os import getuid
+from os import getuid, getgid
 import docker
 
 from logger import log_from_docker
@@ -14,9 +14,12 @@ def run_rsync(volumes, from_path, to_path, relative):
     # -r = copy directories recursively
     # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
     # --delete = delete destination files not in source
-    cmd = ["rsync", "-rv", "-e", "ssh", from_path, to_path, "--delete"]
+    uid = getuid()
+    gid = getgid()
+    cmd = ["rsync", "-rv", "-e", "ssh", "--perms", "--owner", "--group", "--chown={}:{}".format(uid, gid),
+           from_path, to_path, "--delete"]
     if relative:
-        cmd = ["rsync", "-rv", "-e", "ssh", "--relative", from_path, to_path, "--delete"]
+        cmd.append("--relative")
 
     container = client.containers.run("instrumentisto/rsync-ssh", command=cmd, volumes=volumes,
                                       detach=True)
