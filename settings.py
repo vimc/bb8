@@ -1,6 +1,6 @@
 import json
 import os
-from os.path import join, isfile
+from os.path import join, isfile, abspath
 from subprocess import check_output
 
 from targets import DirectoryTarget, NamedVolumeTarget
@@ -19,8 +19,8 @@ class Settings:
             config = json.load(f)
 
         self.starport = config["starport"]
-        self.ssh_key_path = ssh_key_path
-        self.known_hosts_path = known_hosts_path
+        self.ssh_key_path = abspath(ssh_key_path)
+        self.known_hosts_path = abspath(known_hosts_path)
         self.targets = list(Settings.parse_target(t) for t in config["targets"])
 
     @classmethod
