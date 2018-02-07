@@ -1,15 +1,16 @@
-from os import makedirs
-from os.path import isdir
 from subprocess import run, PIPE
 
 
 class DirectoryTarget:
     def __init__(self, path):
-        self.path = path
+        self.name = path
 
     @property
     def id(self):
-        return "Directory: " + self.path
+        return "Directory: " + self.name
+
+    def before_restore(self):
+        pass
 
 
 class NamedVolumeTarget:
@@ -27,3 +28,8 @@ class NamedVolumeTarget:
         ).stdout
         names = text.split('\n')
         return self.name in names
+
+    def before_restore(self):
+        if not self._volume_exists():
+            print("Creating docker volume with name '{}'".format(self.name))
+            run(["docker", "volume", "create", "--name", self.name], stdout=PIPE)

@@ -1,17 +1,18 @@
 {
     "starport": {
         "addr": "annex.montagu.dide.ic.ac.uk",
+        "ip": "129.31.26.49",
         "user": "montagu",
         "backup_location": "testrsync/"
     },
-    "directory_targets": [
+    "targets": [
         {
-            "path": "/testrsync/"
-        }
-    ],
-    "volume_targets": [
+          "path": "/directorytarget/",
+          "type": "directory"
+        },
         {
-            "name": "test"
+          "name": "test_volume",
+          "type": "named_volume"
         }
     ]
 }
