@@ -13,6 +13,7 @@ mkdir starport
 # Support
 # (Upgraded Vault 0.7.3 -> 0.9.3)
 sudo ./setup.sh
+sudo su bb8
 
 Then:
 
