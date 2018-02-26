@@ -9,6 +9,15 @@
         {
           "name": "registry_data",
           "type": "named_volume"
+        },
+        {
+            "type": "directory",
+            "path": "/montagu/vault/storage"
+        },
+        {
+            "type": "directory",
+            "path": "/montagu/teamcity"
         }
+
     ]
 }
