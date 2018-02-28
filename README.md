@@ -104,7 +104,7 @@ Steps taken to set up on support:
 git clone https://github.com/vimc/bb8
 ```
 
-2. Run `./setup.sh` as root
+2. Run `./setup.sh` as root. When prompted for a config file choice, choose 'support'
 ```
 sudo /montagu/bb8/setup.sh
 ```
