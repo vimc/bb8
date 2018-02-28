@@ -96,3 +96,23 @@ mkdir starport
 ```
 ~/bb8/setup_starport.sh
 ```
+
+# Support
+Steps taken to set up on support:
+1. Clone this repo into the `montagu` directory
+```
+git clone https://github.com/vimc/bb8
+```
+
+2. Run `./setup.sh` as root
+```
+sudo /montagu/bb8/setup.sh
+```
+
+NB: The `bb8` group now owns the directory, so to enable pulling from git without `sudo`,
+ add your user to the `bb8` group
+
+3. Run `./schedule.py` as root
+```
+sudo /montagu/bb8/schedule.py
+```
