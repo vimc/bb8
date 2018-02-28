@@ -17,11 +17,7 @@ if ! id -u bb8 > /dev/null 2>&1; then
     echo "bb8:$password" | chpasswd
 
     mkdir -p /var/lib/bb8/.ssh
-
-    mkdir -p /var/log/bb8/
-    chgrp -R bb8 /var/log/bb8/
-    chmod 775 /var/log/bb8/
-
+    
     # add to docker group
     usermod -aG docker bb8
 fi
