@@ -71,13 +71,13 @@ sudo useradd bb8 -U -d /var/lib/bb8
 sudo adduser bb8 ssh
 ```
 
-3. Become the `bb8` user
+3. Become the `bb8` user and change to the home directory
 ```
 sudo su bb8
 cd ~
 ```
 
-4. Clone this repo on the annex
+4. Clone this
 ```
 git clone https://github.com/vimc/bb8
 ```
