@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 LOCK_NAME="bb8_backup"
 LOCK_DIR='/tmp/'${bb8_backup}.lock
 PID_FILE=${LOCK_DIR}'/'${LOCK_NAME}'.pid'
