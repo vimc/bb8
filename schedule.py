@@ -17,7 +17,7 @@ def clear_existing(cron, backup_script):
 
 def add_job(cron, backup_script, test_job):
     job = cron.new(command=backup_script, comment="BB8 backup", user="bb8")
-    job.hour.on(1)
+    job.hour.every(1)
     job.minute.on(0)
     if test_job:
         print("Running scheduled job now as a test. Output will be logged to " + log_dir)
