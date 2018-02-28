@@ -34,7 +34,7 @@ requires further options.
 ### Directory
 Simplest option. Requires a `path` to a directory.
 
-### Named volume TODO
+### Named volume
 Requires the `name` of the volume.
 
 # Scripts
@@ -56,6 +56,45 @@ There are five entrypoints to the backup module.
 4. `backup.sh`: Creates a lock directory and runs a one-off backup, then removes lock directory.
  If a lock directory exists and there is a running process, exits without doing anything.
   If a lock file exists and no running process, removes the lock directory.
-4. `schedule.py`: Creates a cron job that runs backup.py every hour and logs to `./log`. Must be run as root.
+4. `schedule.py`: Creates a cron job that runs backup.sh every hour and logs to `./log`. Must be run as root.
 5. `restore.py`:  TODO
 
+# Setup
+How we configured the starport:
+1. Added a bb8 user and group
+
+```
+sudo useradd bb8 -U -d /var/lib/bb8
+```
+1. Added the `bb8` user to the `ssh` group
+```
+sudo adduser bb8 ssh
+```
+
+1. Became the `bb8` user
+```
+sudo su bb8
+cd ~
+```
+
+1. Cloned this repo on the annex
+```
+git clone https://github.com/vimc/bb8
+
+```
+
+1. Created a `.ssh` directory for the `bb8` user
+```
+mkdir .ssh
+
+```
+
+1. Create the starport directory as the `bb8` user
+```
+mkdir starport
+```
+
+1. Run `setup_starport.sh` as `bb8`
+```
+~/bb8/setup_starport.sh
+```
