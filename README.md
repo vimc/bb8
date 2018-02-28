@@ -60,41 +60,39 @@ There are five entrypoints to the backup module.
 5. `restore.py`:  TODO
 
 # Setup
-How we configured the starport:
-1. Added a bb8 user and group
+These are the steps followed to set up starport on the annex:
+1.  Add a bb8 user and group
 
 ```
 sudo useradd bb8 -U -d /var/lib/bb8
 ```
-1. Added the `bb8` user to the `ssh` group
+2.  Ad the `bb8` user to the `ssh` group
 ```
 sudo adduser bb8 ssh
 ```
 
-1. Became the `bb8` user
+3. Become the `bb8` user
 ```
 sudo su bb8
 cd ~
 ```
 
-1. Cloned this repo on the annex
+4. Clone this repo on the annex
 ```
 git clone https://github.com/vimc/bb8
-
 ```
 
-1. Created a `.ssh` directory for the `bb8` user
+5. Create a `.ssh` directory for the `bb8` user
 ```
 mkdir .ssh
-
 ```
 
-1. Create the starport directory as the `bb8` user
+6. Create the starport directory as the `bb8` user
 ```
 mkdir starport
 ```
 
-1. Run `setup_starport.sh` as `bb8`
+7. Run `setup_starport.sh` as `bb8`
 ```
 ~/bb8/setup_starport.sh
 ```
