@@ -28,7 +28,7 @@ fi
 
 # give bb8 group ownership of this dir
 chgrp -R bb8 $HERE
-chmod 775 $HERE
+chmod -R 775 $HERE
 
 echo "-------------------------------------------"
 echo "Running setup.py:"
