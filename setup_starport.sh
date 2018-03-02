@@ -20,6 +20,10 @@ if ! id -u bb8 > /dev/null 2>&1; then
     mkdir -p /var/lib/bb8/.ssh
 fi
 
+echo "-------------------------------------------"
+echo "Giving bb8 ownership of " $1
+chown -R bb8:bb8 $1
+
 ln -sf $1 /var/lib/bb8
 chown -R bb8:bb8 /var/lib/bb8
 
