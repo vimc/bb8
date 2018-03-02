@@ -41,7 +41,7 @@ def backup_volume(settings, local_volume):
     starport = settings.starport
     volumes = get_volume_args(settings, local_volume, "ro")
 
-    destination_path = "{user}@{addr}:{backup_location}".format(**starport)
+    destination_path = "bb8@{}:starport".format(starport["addr"])
 
     run_rsync(volumes, local_volume, destination_path, True)
 
@@ -51,7 +51,7 @@ def restore_volume(settings, local_volume):
     mounted_volume = join("/", local_volume)
     volumes = get_volume_args(settings, local_volume, "rw")
 
-    remote_dir = "{user}@{addr}:{backup_location}".format(**starport)
+    remote_dir = "bb8@{}:starport".format(starport["addr"])
     remote_path = "{}{}/".format(remote_dir, local_volume)
 
     run_rsync(volumes, remote_path, mounted_volume, False)

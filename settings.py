@@ -9,7 +9,6 @@ root_path = "./etc/"
 config_path = join(root_path, "config.json")
 ssh_key_path = join(root_path, "id_rsa")
 known_hosts_path = join(root_path, "known_hosts")
-
 log_dir = './log/'
 
 

@@ -1,0 +1,21 @@
+{
+    "starport": {
+        "addr": "annex.montagu.dide.ic.ac.uk",
+        "ip": "129.31.26.49"
+    },
+    "targets": [
+        {
+          "name": "registry_data",
+          "type": "named_volume"
+        },
+        {
+            "type": "directory",
+            "path": "/montagu/vault/storage"
+        },
+        {
+            "type": "directory",
+            "path": "/montagu/teamcity"
+        }
+
+    ]
+}

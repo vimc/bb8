@@ -34,7 +34,7 @@ requires further options.
 ### Directory
 Simplest option. Requires a `path` to a directory.
 
-### Named volume TODO
+### Named volume
 Requires the `name` of the volume.
 
 # Scripts
@@ -56,6 +56,40 @@ There are five entrypoints to the backup module.
 4. `backup.sh`: Creates a lock directory and runs a one-off backup, then removes lock directory.
  If a lock directory exists and there is a running process, exits without doing anything.
   If a lock file exists and no running process, removes the lock directory.
-4. `schedule.py`: Creates a cron job that runs backup.py every hour and logs to `./log`. Must be run as root.
+4. `schedule.py`: Creates a cron job that runs backup.sh every hour and logs to `./log`. Must be run as root.
 5. `restore.py`:  TODO
 
+# Setup
+Steps taken to set up the annex
+1. Clone this repo anywhere
+```
+git clone https://github.com/vimc/bb8
+```
+
+2. Run `./setup_starport.sh` as root.
+```
+sudo /montagu/bb8/setup.sh
+```
+
+That's it. Note that this will create a `bb8` user and the starport location will be `/var/lib/bb8/starport`
+
+
+# Support
+Steps taken to set up on support:
+1. Clone this repo into the `montagu` directory
+```
+git clone https://github.com/vimc/bb8
+```
+
+2. Run `./setup.sh` as root. When prompted for a config file choice, choose 'support'
+```
+sudo /montagu/bb8/setup.sh
+```
+
+NB: The `bb8` group now owns the directory, so to enable pulling from git without `sudo`,
+ add your user to the `bb8` group
+
+3. Run `./schedule.py` as root
+```
+sudo /montagu/bb8/schedule.py
+```

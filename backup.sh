@@ -1,12 +1,19 @@
+#!/usr/bin/env bash
+
 LOCK_NAME="bb8_backup"
 LOCK_DIR='/tmp/'${bb8_backup}.lock
 PID_FILE=${LOCK_DIR}'/'${LOCK_NAME}'.pid'
+HERE=${BASH_SOURCE%/*}
 
 if mkdir ${LOCK_DIR} 2>/dev/null; then
   # If the ${LOCK_DIR} doesn't exist, then start working & store the ${PID_FILE}
   echo $$ > ${PID_FILE}
 
-  ${BASH_SOURCE%/*}/backup.py
+  echo "Changing directory to "
+  echo $HERE
+  cd $HERE
+
+ ./backup.py
 
   rm -rf ${LOCK_DIR}
   exit

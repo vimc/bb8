@@ -17,13 +17,14 @@ if ! id -u bb8 > /dev/null 2>&1; then
     echo "bb8:$password" | chpasswd
 
     mkdir -p /var/lib/bb8/.ssh
-
+    
     # add to docker group
     usermod -aG docker bb8
 fi
 
 # give bb8 group ownership of this dir
 chgrp -R bb8 $HERE
+chmod -R g+w $HERE
 
 echo "-------------------------------------------"
 echo "Running setup.py:"
@@ -31,5 +32,5 @@ echo "Running setup.py:"
 
 echo "-------------------------------------------"
 
-echo "Setup complete. To schedule backups, run ./schedule.py"
+echo "Setup complete. To schedule backups, run sudo ./schedule.py"
 echo "To perform a restore, run ./restore.py"
