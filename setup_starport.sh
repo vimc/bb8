@@ -15,6 +15,7 @@ if ! id -u bb8 > /dev/null 2>&1; then
 fi
 
 mkdir -p /var/lib/bb8/starport
+ln -sf /var/lib/bb8/starport $1
 chown -R bb8:bb8 /var/lib/bb8
 
 KEY_PATH=ssh_key
