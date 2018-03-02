@@ -1,3 +1,4 @@
+import logging
 from subprocess import run, PIPE
 
 
@@ -31,5 +32,5 @@ class NamedVolumeTarget:
 
     def before_restore(self):
         if not self._volume_exists():
-            print("Creating docker volume with name '{}'".format(self.name))
+            logging.info("Creating docker volume with name '{}'".format(self.name))
             run(["docker", "volume", "create", "--name", self.name], stdout=PIPE)
