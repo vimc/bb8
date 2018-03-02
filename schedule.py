@@ -27,7 +27,7 @@ def add_job(cron, backup_script, test_job):
 def schedule_backups(test_job):
     here = dirname(abspath(__file__))
     print("Scheduling backup task")
-    backup_script = "cd {} && {}".format(here, join(here, "backup.sh"))
+    backup_script = join(here, "backup.sh")
     if isfile(tab_path):
         cron = CronTab(tabfile=tab_path, user=False)
     else:
