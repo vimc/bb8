@@ -20,7 +20,6 @@ if ! id -u bb8 > /dev/null 2>&1; then
     mkdir -p /var/lib/bb8/.ssh
 fi
 
-mkdir -p /var/lib/bb8/starport
 ln -sf $1 /var/lib/bb8
 chown -R bb8:bb8 /var/lib/bb8
 
