@@ -1,9 +1,7 @@
 {
     "starport": {
         "addr": "annex.montagu.dide.ic.ac.uk",
-        "ip": "129.31.26.49",
-        "user": "bb8",
-        "backup_location": "~bb8/starport/"
+        "ip": "129.31.26.49"
     },
     "targets": [
         {
