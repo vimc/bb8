@@ -32,5 +32,5 @@ echo "Running setup.py:"
 
 echo "-------------------------------------------"
 
-echo "Setup complete. To schedule backups, run ./schedule.py"
+echo "Setup complete. To schedule backups, run sudo ./schedule.py"
 echo "To perform a restore, run ./restore.py"
