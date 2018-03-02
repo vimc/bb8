@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+if [[ $# -eq 0 ]] ; then
+    echo 'Please pass starport directory as an argument'
+    echo 'eg: sudo ./setup_starport.sh /mnt/data/starport '
+    exit 0
+fi
+
 source ${BASH_SOURCE%/*}/vault_auth.sh
 
 echo "-------------------------------------------"
