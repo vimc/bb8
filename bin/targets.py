@@ -1,3 +1,4 @@
+import logging
 from subprocess import run, PIPE
 
 
@@ -31,11 +32,15 @@ class NamedVolumeTarget:
     def mount_id(self):
         return self.volume
 
-    def _volume_exists(self, docker):
-        return self.volume in [x.name for x in docker.volumes.list()]
+    def _volume_exists(self):
+        text = run(
+            ["docker", "volume", "ls", "-q"],
+            stdout=PIPE, universal_newlines=True
+        ).stdout
+        names = text.split('\n')
+        return self.volume in names
 
-    def before_restore(self, docker):
-        if not self._volume_exists(docker):
-            print("Creating docker volume with name '{}'".format(self.volume))
-            docker.volumes.create(self.volume)
-            run(["docker", "volume", "create", "--name", self.volume], stdout=PIPE)
+    def before_restore(self):
+        if not self._volume_exists():
+            logging.info("Creating docker volume with name '{}'".format(self.name))
+            run(["docker", "volume", "create", "--name", self.name], stdout=PIPE)

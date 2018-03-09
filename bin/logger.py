@@ -32,9 +32,7 @@ def with_logging(do):
 
 
 def log_from_docker(container):
-    for log in container.logs(stream=True, stderr=True, stdout=False):
-        logging.error(log.strip().decode("UTF-8"))
-    for log in container.logs(stream=True, stderr=False, stdout=True):
+    for log in container.logs(stream=True):
         logging.info(log.strip().decode("UTF-8"))
 
 
