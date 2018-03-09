@@ -5,4 +5,5 @@ docker run \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v bb8_ssh:/bb8/etc/.ssh \
     -v bb8_logs:/bb8/logs \
+    --name bb8 \
     bb8 "$@"
