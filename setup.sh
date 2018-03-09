@@ -22,9 +22,10 @@ docker build --build-arg "TARGETS=$targets" --tag bb8 .
 docker volume create bb8_ssh
 docker volume create bb8_logs
 ./bb8 dump_ssh
+ln -s $(realpath ./bb8) /usr/local/bin/bb8
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
-echo "backup:           Run ./bb8 backup"
-echo "restore:          Run ./bb8 restore"
+echo "backup:           Run bb8 backup"
+echo "restore:          Run bb8 restore"
 echo "schedule backups: Run sudo ./schedule.sh"
