@@ -3,7 +3,6 @@ import logging
 from os import getuid, getgid
 from os.path import join
 
-from os import getuid, getgid
 import docker
 
 from logger import log_from_docker
@@ -38,8 +37,8 @@ def run_rsync(volumes, from_path, to_path, relative):
         raise e
 
 
-def get_volume_args(settings, name, local_volume, volume_mode):
-    mounted_volume = join("/", name)
+def get_volume_args(settings, remote_name, local_volume, volume_mode):
+    mounted_volume = join("/", remote_name)
     return {
         "bb8_ssh": {"bind": "/root/.ssh", "mode": "rw"},
         local_volume: {"bind": mounted_volume, "mode": volume_mode}
@@ -51,22 +50,22 @@ def get_remote_dir(starport):
 
 
 # local_volume can be an absolute path or a named volume
-def backup_volume(settings, name, local_volume):
+def backup_volume(settings, remote_name, local_volume):
     starport = settings.starport
-    volumes = get_volume_args(settings, name, local_volume, "ro")
+    volumes = get_volume_args(settings, remote_name, local_volume, "ro")
 
     destination_path = get_remote_dir(starport)
 
     run_rsync(volumes, local_volume, destination_path, True)
 
 
-def restore_volume(settings, name, local_volume):
+def restore_volume(settings, remote_name, local_volume):
     starport = settings.starport
     mounted_volume = join("/", local_volume)
-    volumes = get_volume_args(settings, name, local_volume, "rw")
+    volumes = get_volume_args(settings, remote_name, local_volume, "rw")
 
     remote_dir = get_remote_dir(starport)
-    remote_path = "{}{}/".format(remote_dir, name)
+    remote_path = "{}{}/".format(remote_dir, remote_name)
 
     logging.info("Restoring from {} to {}".format(remote_path, local_volume))
     run_rsync(volumes, remote_path, mounted_volume, False)
