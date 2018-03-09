@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -ex
+
+docker run \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v bb8_ssh:/bb8/etc/.ssh \
+    bb8 "$@"

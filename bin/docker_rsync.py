@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-from os.path import join
 from os import getuid, getgid
+from os.path import join
+
 import docker
 
 from logger import log_from_docker
@@ -27,31 +28,34 @@ def run_rsync(volumes, from_path, to_path, relative):
     log_from_docker(container)
 
 
-def get_volume_args(settings, local_volume, volume_mode):
-    mounted_volume = join("/", local_volume)
+def get_volume_args(settings, name, local_volume, volume_mode):
+    mounted_volume = join("/", name)
     return {
-        settings.known_hosts_path: {"bind": "/root/.ssh/known_hosts", "mode": "rw"},
-        settings.ssh_key_path: {"bind": "/root/.ssh/id_rsa", "mode": "ro"},
+        "bb8_ssh": {"bind": "/root/.ssh", "mode": "rw"},
         local_volume: {"bind": mounted_volume, "mode": volume_mode}
     }
 
 
-# local_volume can be an absolute path or a named volume
-def backup_volume(settings, local_volume):
-    starport = settings.starport
-    volumes = get_volume_args(settings, local_volume, "ro")
+def get_remote_dir(starport):
+    return "bb8@{}:{}".format(starport["addr"], starport["backup_location"])
 
-    destination_path = "bb8@{}:starport".format(starport["addr"])
+
+# local_volume can be an absolute path or a named volume
+def backup_volume(settings, name, local_volume):
+    starport = settings.starport
+    volumes = get_volume_args(settings, name, local_volume, "ro")
+
+    destination_path = get_remote_dir(starport)
 
     run_rsync(volumes, local_volume, destination_path, True)
 
 
-def restore_volume(settings, local_volume):
+def restore_volume(settings, name, local_volume):
     starport = settings.starport
     mounted_volume = join("/", local_volume)
-    volumes = get_volume_args(settings, local_volume, "rw")
+    volumes = get_volume_args(settings, name, local_volume, "rw")
 
-    remote_dir = "bb8@{}:starport".format(starport["addr"])
-    remote_path = "{}{}/".format(remote_dir, local_volume)
+    remote_dir = get_remote_dir(starport)
+    remote_path = "{}{}/".format(remote_dir, name)
 
     run_rsync(volumes, remote_path, mounted_volume, False)

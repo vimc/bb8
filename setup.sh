@@ -19,9 +19,11 @@ source ${HERE}/vault_auth.sh
 cp "$source_config_path" source-config.json
 
 docker build --build-arg "TARGETS=$targets" --tag bb8 .
+docker volume create bb8_ssh
+./bb8 dump_ssh
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
-echo "backup:           Run ./backup.sh"
+echo "backup:           Run ./bb8 backup"
+echo "restore:          Run ./bb8 restore"
 echo "schedule backups: Run sudo ./schedule.sh"
-echo "restore:          Run ./restore.sh"

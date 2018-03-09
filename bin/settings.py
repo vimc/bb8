@@ -6,8 +6,10 @@ from targets import DirectoryTarget, NamedVolumeTarget
 root_path = "/bb8/etc/"
 source_config_path = join(root_path, "source-config.json")
 config_path = join(root_path, "config.json")
-ssh_key_path = join(root_path, "id_rsa")
+ssh_key_path = join(root_path, "secrets/ssh_key")
+host_key_path = join(root_path, "secrets/host_key")
 known_hosts_path = join(root_path, "known_hosts")
+
 log_dir = './log/'
 
 
@@ -17,8 +19,6 @@ class Settings:
             config = json.load(f)
 
         self.starport = config["starport"]
-        self.ssh_key_path = abspath(ssh_key_path)
-        self.known_hosts_path = abspath(known_hosts_path)
         self.targets = list(Settings.parse_target(t) for t in config["targets"])
 
     @classmethod
