@@ -1,0 +1,36 @@
+{
+    "starport": {
+        "addr": "annex.montagu.dide.ic.ac.uk",
+        "ip": "129.31.26.49",
+        "user": "bb8",
+        "backup_location": "~bb8/starport/"
+    },
+    "targets": [
+        {
+            "name": "registry",
+            "type": "named_volume",
+            "volume": "registry_data"
+        },
+        {
+            "name": "vault",
+            "type": "directory",
+            "path": "/montagu/vault/storage"
+        },
+        {
+            "name": "teamcity",
+            "type": "directory",
+            "path": "/montagu/teamcity"
+        },
+        {
+            "name": "orderly",
+            "type": "named_volume",
+            "volume": "montagu_orderly_volume"
+        },
+        {
+            "name": "annex_db",
+            "type": "named_volume",
+            "volume": "montagu_db_annex_volume",
+            "comment": "We have to stop the annex db before backing up this volume"
+        }
+    ]
+}

@@ -13,7 +13,7 @@ if mkdir ${LOCK_DIR} 2>/dev/null; then
   echo $HERE
   cd $HERE
 
- ./backup.py
+ bin/backup.py
 
   rm -rf ${LOCK_DIR}
   exit

@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 """
 Usage:
-  setup_config.py SOURCE_CONFIG_PATH [TARGET ...]
+  setup_config.py [TARGET ...]
 """
 
-from docopt import docopt
 import json
 
-from os.path import isdir
+from docopt import docopt
 
-from os import mkdir
-
-from settings import root_path, config_path
+from settings import config_path, source_config_path
 
 
 def check_user_input(config, desired_targets):
@@ -29,7 +26,6 @@ def check_user_input(config, desired_targets):
 
 if __name__ == "__main__":
     args = docopt(__doc__)
-    source_config_path = args["SOURCE_CONFIG_PATH"]
     desired_targets = args["TARGET"]
     with open(source_config_path) as f:
         config = json.load(f)
@@ -41,7 +37,7 @@ if __name__ == "__main__":
         'starport': config["starport"],
         'targets': machine_targets
     }
-    if not isdir(root_path):
-        mkdir(root_path)
     with open(config_path, 'w') as f:
         json.dump(machine_config, f, indent=4)
+
+    print("bb8 setup with these targets: {}".format(", ".join(desired_targets)))
