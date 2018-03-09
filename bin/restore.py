@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import logging
 
-from logger import with_logging
-from settings import load_settings, log_dir
-from docker_rsync import restore_volume
 import docker
+
+from docker_rsync import restore_volume
+from logger import with_logging
+from settings import load_settings
 
 
 def run_restore():
@@ -18,7 +19,7 @@ def run_restore():
     for target in targets:
         logging.info("- " + target.id)
         target.before_restore(docker_client)
-        restore_volume(settings, target.name, target.mount_id)
+        restore_volume(settings, target.mount_id)
 
 
 if __name__ == "__main__":

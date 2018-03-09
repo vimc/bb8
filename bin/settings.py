@@ -10,7 +10,7 @@ ssh_key_path = join(root_path, "secrets/ssh_key")
 host_key_path = join(root_path, "secrets/host_key")
 known_hosts_path = join(root_path, "known_hosts")
 
-log_dir = './log/'
+log_dir = '/bb8/logs/'
 
 
 class Settings:

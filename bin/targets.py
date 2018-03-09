@@ -15,7 +15,7 @@ class DirectoryTarget:
     def mount_id(self):
         return self.path
 
-    def before_restore(self):
+    def before_restore(self, docker):
         pass
 
 
