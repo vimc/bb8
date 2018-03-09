@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import logging
-from os.path import isdir
-from os import makedirs
 
 from logger import with_logging
 from settings import load_settings, log_dir
