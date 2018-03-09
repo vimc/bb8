@@ -17,7 +17,7 @@ def run_backup():
     targets = list(t for t in settings.targets)
     for target in targets:
         logging.info("- " + target.id)
-        backup_volume(settings, target.name)
+        backup_volume(settings, target.mount_id)
 
 
 if __name__ == "__main__":

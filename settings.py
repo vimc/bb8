@@ -26,9 +26,9 @@ class Settings:
     def parse_target(cls, data):
         t = data["type"]
         if t == "directory":
-            return DirectoryTarget(data["path"])
+            return DirectoryTarget(data["name"], data["path"])
         elif t == "named_volume":
-            return NamedVolumeTarget(data["name"])
+            return NamedVolumeTarget(data["name"], data["volume"])
         else:
             raise Exception("Unsupported target type: " + t)
 
