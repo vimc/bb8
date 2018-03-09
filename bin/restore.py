@@ -4,7 +4,6 @@ import logging
 import docker
 
 from docker_rsync import restore_volume
-from logger import with_logging
 from settings import load_settings
 
 
@@ -20,7 +19,3 @@ def run_restore():
         logging.info("- " + target.id)
         target.before_restore(docker_client)
         restore_volume(settings, target.mount_id)
-
-
-if __name__ == "__main__":
-    with_logging(run_restore)
