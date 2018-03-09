@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 from os.path import join
 from os import getuid, getgid
 import docker
@@ -14,17 +15,25 @@ def run_rsync(volumes, from_path, to_path, relative):
     # -r = copy directories recursively
     # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
     # --delete = delete destination files not in source
+    # --info=progress2 - print overall progress
     uid = getuid()
     gid = getgid()
     cmd = ["rsync", "-rv", "-e", "ssh", "--perms", "--owner", "--group", "--chown={}:{}".format(uid, gid),
-           from_path, to_path, "--delete"]
+           from_path, to_path, "--delete", "--info=progress2"]
     if relative:
         cmd.append("--relative")
 
+    logging.debug("Running rsync in docker with: " + " ".join(cmd))
+    logging.debug("Volume mapping: " + str(volumes))
     container = client.containers.run("instrumentisto/rsync-ssh", command=cmd, volumes=volumes,
-                                      detach=True)
+                                      detach=True, remove=True)
 
-    log_from_docker(container)
+    try:
+        log_from_docker(container)
+    except KeyboardInterrupt as e:
+        logging.warning("Stopping container " + container.name)
+        container.stop()
+        raise e
 
 
 def get_volume_args(settings, local_volume, volume_mode):
@@ -54,4 +63,5 @@ def restore_volume(settings, local_volume):
     remote_dir = "bb8@{}:starport".format(starport["addr"])
     remote_path = "{}{}/".format(remote_dir, local_volume)
 
+    logging.info("Restoring from {} to {}".format(remote_path, local_volume))
     run_rsync(volumes, remote_path, mounted_volume, False)
