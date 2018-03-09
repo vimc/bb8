@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Usage:
-  setup_config.py CONFIG_PATH [TARGET ...]
+  setup_config.py SOURCE_CONFIG_PATH [TARGET ...]
 """
 
 from docopt import docopt
@@ -29,7 +29,7 @@ def check_user_input(config, desired_targets):
 
 if __name__ == "__main__":
     args = docopt(__doc__)
-    source_config_path = args["CONFIG_PATH"]
+    source_config_path = args["SOURCE_CONFIG_PATH"]
     desired_targets = args["TARGET"]
     with open(source_config_path) as f:
         config = json.load(f)

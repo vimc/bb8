@@ -9,7 +9,7 @@ if __name__ == "__main__":
         mkdir(root_path)
     if not isfile(config_path):
         print("Missing config files in {}.".format(root_path))
-        print("First run setup_config.py config_path TARGET ...")
+        print("First run setup_config.py SOURCE_CONFIG_PATH TARGET ...")
         exit(-1)
 
     print("Obtaining secrets from the vault. If you are not authenticated with the vault, this will fail.")
