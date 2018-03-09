@@ -1,5 +1,7 @@
 .idea
 __pycache__
-etc/
 config/
+etc/
 log/
+secrets/
+source-config.json
