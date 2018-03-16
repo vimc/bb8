@@ -64,7 +64,8 @@ There are six entrypoints to the backup module.
 Note: Montagu specific setup instructions here: https://github.com/vimc/montagu-bb8.
 If setting up Montagu backup, follow those instructions first. Then, from this directory:
 
-1. run `./setup_config.py` as root to configure targets.
+1. run `./setup_config.py` as root to configure targets. This takes as argument one config file as described above, and
+a space separated list of targets from that file.
 2. run `./setup.sh` as root.
 
 NB: The `bb8` group now owns the directory, so to enable pulling from git without `sudo`,
