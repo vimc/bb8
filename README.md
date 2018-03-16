@@ -70,7 +70,7 @@ If setting up Montagu backup, follow those instructions first. Then:
 NB: The `bb8` group now owns the directory, so to enable pulling from git without `sudo`,
  add your user to the `bb8` group
 
-3. Run `./schedule.py` as root to schedule backups.
+3. Use one of the entry points listed above to backup, schedule backups, or restore.
 
 # Tests
 
