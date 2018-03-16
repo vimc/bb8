@@ -59,3 +59,12 @@ There are six entrypoints to the backup module.
   If a lock file exists and no running process, removes the lock directory.
 1. `schedule.py`: Creates a cron job that runs backup.sh every hour and logs to `./log`. Must be run as root.
 1. `restore.py`:  Restores configured targets. First creates directories and volumes if they don't exist.
+
+# Tests
+
+Run the test suite with
+
+```
+pip3 install -r requirements-dev.txt
+nosetests3
+```

@@ -37,8 +37,7 @@ class NamedVolumeTarget:
         try:
             self.docker.volumes.get(self.volume)
             return True
-        except:
-            docker.errors.NotFound
+        except docker.errors.NotFound:
             return False
 
     def before_restore(self):
