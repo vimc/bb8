@@ -43,4 +43,4 @@ class NamedVolumeTarget:
     def before_restore(self):
         if not self._volume_exists():
             logging.info("Creating docker volume with name '{}'".format(self.name))
-            run(["docker", "volume", "create", "--name", self.name], stdout=PIPE)
+            run(["docker", "volume", "create", "--name", self.volume], stdout=PIPE)
