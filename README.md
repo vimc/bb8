@@ -94,3 +94,12 @@ NB: The `bb8` group now owns the directory, so to enable pulling from git withou
 ```
 sudo /montagu/bb8/schedule.py
 ```
+
+# Tests
+
+Run the test suite with
+
+```
+pip3 install -r requirements-dev.txt
+nosetests3
+```
