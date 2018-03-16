@@ -1,5 +1,5 @@
 import logging
-from subprocess import run, PIPE
+import docker
 
 
 class DirectoryTarget:
@@ -20,9 +20,10 @@ class DirectoryTarget:
 
 
 class NamedVolumeTarget:
-    def __init__(self, name, volume):
+    def __init__(self, name, volume, docker_client=None):
         self.name = name
         self.volume = volume
+        self.docker = docker_client or docker.client.from_env()
 
     @property
     def id(self):
@@ -33,14 +34,15 @@ class NamedVolumeTarget:
         return self.volume
 
     def _volume_exists(self):
-        text = run(
-            ["docker", "volume", "ls", "-q"],
-            stdout=PIPE, universal_newlines=True
-        ).stdout
-        names = text.split('\n')
-        return self.volume in names
+        try:
+            self.docker.volumes.get(self.volume)
+            return True
+        except:
+            docker.errors.NotFound
+            return False
 
     def before_restore(self):
         if not self._volume_exists():
-            logging.info("Creating docker volume with name '{}'".format(self.name))
-            run(["docker", "volume", "create", "--name", self.volume], stdout=PIPE)
+            logging.info("Creating docker volume with name '{}'".format(
+                self.volume))
+            self.docker.volumes.create(self.volume)
