@@ -61,7 +61,7 @@ There are six entrypoints to the backup module.
 1. `restore.py`:  Restores the configured targets. Creates directories and volumes if they don't exist.
 
 # Setup
-Note: Montagu specific setup instructions here: https://github.com/vimc/montagu-bb8
+Note: Montagu specific setup instructions here: https://github.com/vimc/montagu-bb8.
 If setting up Montagu backup, follow those instructions first. Then:
 
 1. run `./setup_config.py` as root to configure targets.
