@@ -4,7 +4,7 @@
 Usage:
   main.py backup
   main.py restore
-  main.py dump_ssh
+  main.py init
 """
 import shutil
 from os.path import join
@@ -25,8 +25,9 @@ def run():
     elif args["restore"]:
         print("Restoring targets from Starport. Output will be logged to " + log_dir)
         run_restore()
-    elif args["dump_ssh"]:
-        print("Storing ssh key and known_hosts file in volume (mounted at /bb8/etc/.ssh)")
+    elif args["init"]:
+        print("Storing ssh key and known_hosts file in volume (mounted at "
+              "/bb8/etc/.ssh)")
         dest = join(root_path, ".ssh")
         shutil.copy(ssh_key_path, join(dest, "id_rsa"))
         shutil.copy(known_hosts_path, join(dest, "known_hosts"))

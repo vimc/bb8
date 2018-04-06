@@ -13,6 +13,12 @@ shift && targets="$@"   # Targets is all the args after the first
 # (where the Dockerfile looks for them)
 HERE=${BASH_SOURCE%/*}
 source ${HERE}/vault_auth.sh
+
+function delete_secrets {
+    set +e
+    rm -r ${HERE}/secrets
+}
+trap delete_secrets SIGINT EXIT
 ./obtain_secrets.py
 
 # Copy config
@@ -21,7 +27,7 @@ cp "$source_config_path" source-config.json
 docker build --build-arg "TARGETS=$targets" --tag bb8 .
 docker volume create bb8_ssh
 docker volume create bb8_logs
-./bb8 dump_ssh
+./bb8 init
 ln -s $(realpath ./bb8) /usr/local/bin/bb8
 
 echo "-----------------------------------------------"

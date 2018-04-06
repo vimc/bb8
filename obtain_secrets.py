@@ -24,7 +24,8 @@ def save_securely(path, data):
 
 
 if __name__ == "__main__":
-    print("Obtaining secrets from the vault. If you are not authenticated with the vault, this will fail.")
+    print("Obtaining secrets from the vault. If you are not authenticated "
+          "with the vault, this will fail.")
     if not isdir(secrets_dir):
         os.mkdir(secrets_dir)
 
