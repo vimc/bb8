@@ -3,7 +3,7 @@ This repository is a set of bash and Python scripts that wrap around rsync.
 
 # Configuration
 bb8 backs up data to another server, which we call the Starport, via ssh.
-We create a "source" configuration file that lists all targets. Then, when we
+bb8 requires a "source" configuration file that lists all targets. Then, when we
 set up a particular machine to either backup or restore, we choose which targets
 we want to backup and/or restore on this machine.
 
@@ -37,7 +37,7 @@ across all targets. Each type of target requires further options.
 Simplest option. Requires a `path` to a directory.
 
 ### Named volume
-`volume`: The name`volume` of the volume.
+`volume`: The name of the volume.
 
 # Setup
 ## Setup starport
@@ -56,7 +56,7 @@ This builds a new docker image. It includes the source config, filtered to
 the requested targets, and the SSL secrets from the Vault. For this reason, 
 it is important that you do not push this image to any remote registry.
 
-Once the docker image is build, the setup script also creates required 
+Once the docker image is built, the setup script also creates required 
 volumes for bb8, and invokes the built image to dump out the SSH key and 
 known hosts file that will be required for the rsync container.
 

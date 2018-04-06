@@ -13,6 +13,12 @@ shift && targets="$@"   # Targets is all the args after the first
 # (where the Dockerfile looks for them)
 HERE=${BASH_SOURCE%/*}
 source ${HERE}/vault_auth.sh
+
+function delete_secrets {
+    set +e
+    rm -r ${HERE}/secrets
+}
+trap delete_secrets SIGINT EXIT
 ./obtain_secrets.py
 
 # Copy config
