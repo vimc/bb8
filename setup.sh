@@ -27,7 +27,7 @@ cp "$source_config_path" source-config.json
 docker build --build-arg "TARGETS=$targets" --tag bb8 .
 docker volume create bb8_ssh
 docker volume create bb8_logs
-./bb8 dump_ssh
+./bb8 init
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
