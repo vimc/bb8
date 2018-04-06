@@ -14,8 +14,7 @@ def run_restore():
     logging.info("Remote directory: {}".format(starport["backup_location"]))
 
     targets = list(t for t in settings.targets)
-    docker_client = docker.client.from_env()
     for target in targets:
         logging.info("- " + target.id)
-        target.before_restore(docker_client)
+        target.before_restore()
         restore_volume(settings, target.mount_id)

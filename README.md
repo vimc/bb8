@@ -48,6 +48,9 @@ So that bb8 can communicate with the Starport via ssh,
  When bb8 has been configured, these live in this repo at `./etc/config.json` and `./etc/id_rsa`, respectively.
 
 ## Setup leaf machine
+Note: Montagu specific setup instructions here: https://github.com/vimc/montagu-bb8.
+If setting up Montagu backup, follow those instructions first. Then, from this directory:
+
 ```
 ./setup.sh PATH_TO_SOURCE_CONFIG [TARGET ...]
 ```
@@ -78,36 +81,21 @@ or to see all options, just:
 the `bb8_logs` volume. Must be run as root.
 
 # Setup record
-Steps taken to set up the annex
-1. Clone this repo anywhere
-```
-git clone https://github.com/vimc/bb8
-```
 
-2. Run `./setup_starport.sh` as root.
-```
-sudo /montagu/bb8/setup.sh
-```
-
-That's it. Note that this will create a `bb8` user and the starport location will be `/var/lib/bb8/starport`
-
-
-# Support
-Steps taken to set up on support:
-1. Clone this repo into the `montagu` directory
-```
-git clone https://github.com/vimc/bb8
-```
-
-2. Run `./setup.sh` as root. When prompted for a config file choice, choose 'support'
-```
-sudo /montagu/bb8/setup.sh
-```
+1. run `./setup_config.py` as root to configure targets. This takes as argument one config file as described above, and
+a space separated list of targets from that file.
+2. run `./setup.sh` as root.
 
 NB: The `bb8` group now owns the directory, so to enable pulling from git without `sudo`,
  add your user to the `bb8` group
 
-3. Run `./schedule.py` as root
+3. Use one of the entry points listed above to backup, schedule backups, or restore.
+
+# Tests
+
+Run the test suite with
+
 ```
-sudo /montagu/bb8/schedule.py
+pip3 install -r requirements-dev.txt
+nosetests3
 ```

@@ -1,5 +1,4 @@
-import logging
-from subprocess import run, PIPE
+import docker
 
 
 class DirectoryTarget:
@@ -15,14 +14,15 @@ class DirectoryTarget:
     def mount_id(self):
         return self.path
 
-    def before_restore(self, docker):
+    def before_restore(self):
         pass
 
 
 class NamedVolumeTarget:
-    def __init__(self, name, volume):
+    def __init__(self, name, volume, docker_client=None):
         self.name = name
         self.volume = volume
+        self.docker = docker_client or docker.client.from_env()
 
     @property
     def id(self):
@@ -32,10 +32,10 @@ class NamedVolumeTarget:
     def mount_id(self):
         return self.volume
 
-    def _volume_exists(self, docker):
-        return self.volume in [x.name for x in docker.volumes.list()]
+    def _volume_exists(self):
+        return self.volume in [x.name for x in self.docker.volumes.list()]
 
-    def before_restore(self, docker):
-        if not self._volume_exists(docker):
+    def before_restore(self):
+        if not self._volume_exists():
             print("Creating docker volume with name '{}'".format(self.volume))
-            docker.volumes.create(self.volume)
+            self.docker.volumes.create(self.volume)
