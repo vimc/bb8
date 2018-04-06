@@ -39,4 +39,3 @@ class NamedVolumeTarget:
         if not self._volume_exists(docker):
             print("Creating docker volume with name '{}'".format(self.volume))
             docker.volumes.create(self.volume)
-            run(["docker", "volume", "create", "--name", self.volume], stdout=PIPE)
