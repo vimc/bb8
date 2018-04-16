@@ -1,31 +1,24 @@
 #!/usr/bin/env bash
-set -e
 
-if [[ $# -eq 0 ]] ; then
-    echo 'Please pass starport directory as an argument'
-    echo 'eg: sudo ./setup_starport.sh /mnt/data/starport '
+set -ex
+
+if [[ $# -ne 2 ]] ; then
+    echo 'Please pass starport directory and user as arguments'
+    echo 'eg: sudo ./setup_starport.sh /mnt/data/starport montagu'
     exit 0
 fi
+
+bb8_user=$2
+starport=$1
+bb8_user_home=$(eval echo ~$bb8_user)
 
 source ${BASH_SOURCE%/*}/vault_auth.sh
 
 echo "-------------------------------------------"
-echo "Installing bb8 user and group"
+echo "Giving $bb8_user ownership of $starport"
+chown -R $bb8_user:$bb8_user $starport
 
-if ! id -u bb8 > /dev/null 2>&1; then
-    useradd bb8 -U -d /var/lib/bb8
-    password=$(vault read --field password secret/backup/bb8/user)
-    echo "bb8:$password" | chpasswd
-
-    mkdir -p /var/lib/bb8/.ssh
-fi
-
-echo "-------------------------------------------"
-echo "Giving bb8 ownership of " $1
-chown -R bb8:bb8 $1
-
-ln -sf $1 /var/lib/bb8
-chown -R bb8:bb8 /var/lib/bb8
+ln -sf $starport $bb8_user_home
 
 KEY_PATH=ssh_key
 
@@ -43,6 +36,6 @@ vault write secret/annex/id_rsa value=@$KEY_PATH/id_rsa
 vault write secret/annex/id_rsa.pub value=@$KEY_PATH/id_rsa.pub
 vault write secret/annex/host_key value=@/etc/ssh/ssh_host_ecdsa_key.pub
 
-cat $KEY_PATH/id_rsa.pub >> /var/lib/bb8/.ssh/authorized_keys
+cat $KEY_PATH/id_rsa.pub >> ~$bb8_user/.ssh/authorized_keys
 
 echo "Setup of Starport complete. You can now set up production"
