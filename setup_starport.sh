@@ -36,6 +36,6 @@ vault write secret/annex/id_rsa value=@$KEY_PATH/id_rsa
 vault write secret/annex/id_rsa.pub value=@$KEY_PATH/id_rsa.pub
 vault write secret/annex/host_key value=@/etc/ssh/ssh_host_ecdsa_key.pub
 
-cat $KEY_PATH/id_rsa.pub >> ~$bb8_user/.ssh/authorized_keys
+cat $KEY_PATH/id_rsa.pub >> $bb8_user_home/.ssh/authorized_keys
 
 echo "Setup of Starport complete. You can now set up production"
