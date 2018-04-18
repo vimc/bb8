@@ -40,7 +40,7 @@ def run_rsync(volumes, from_path, to_path, relative):
 def get_volume_args(settings, local_volume, volume_mode):
     mounted_volume = join("/", local_volume)
     return {
-        "bb8_ssh": {"bind": "/root/.ssh", "mode": "rw"},
+        "bb8_ssh": {"bind": "/root/.ssh", "mode": "ro"},
         local_volume: {"bind": mounted_volume, "mode": volume_mode}
     }
 
