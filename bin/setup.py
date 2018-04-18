@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
 Usage:
-  setup_config.py SOURCE_CONFIG_PATH [TARGET ...]
+  setup.py [TARGET ...]
 """
 
-from docopt import docopt
 import json
+from shutil import copy
 
-from os.path import isdir
+from docopt import docopt
 
-from os import mkdir
-
-from settings import root_path, config_path
+from settings import *
 
 
 def check_user_input(config, desired_targets):
@@ -27,21 +25,33 @@ def check_user_input(config, desired_targets):
         exit(-2)
 
 
-if __name__ == "__main__":
+def setup_targets():
     args = docopt(__doc__)
-    source_config_path = args["SOURCE_CONFIG_PATH"]
     desired_targets = args["TARGET"]
     with open(source_config_path) as f:
         config = json.load(f)
-
     check_user_input(config, desired_targets)
     machine_targets = list(x for x in config["targets"] if x["name"] in desired_targets)
-
     machine_config = {
         'starport': config["starport"],
         'targets': machine_targets
     }
-    if not isdir(root_path):
-        mkdir(root_path)
     with open(config_path, 'w') as f:
         json.dump(machine_config, f, indent=4)
+
+    print("bb8 setup with these targets: {}".format(", ".join(desired_targets)))
+
+
+def setup_known_hosts():
+    settings = load_settings()
+    starport = settings.starport
+    with open(host_key_path, 'r') as f:
+        host_key = f.read()
+    with open(known_hosts_path, 'a') as f:
+        f.write("{},{} {}".format(starport["ip"], starport["addr"], host_key))
+    print("Saved host key for {} to known hosts".format(starport["addr"]))
+
+
+if __name__ == "__main__":
+    setup_targets()
+    setup_known_hosts()

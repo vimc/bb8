@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import logging
+
 import docker
 
 from logger import with_logging
 from settings import load_settings, log_dir
 from docker_rsync import backup_volume
+from settings import load_settings
 
 client = docker.from_env()
 
@@ -21,8 +23,3 @@ def run_backup():
             backup_volume(settings, target.mount_id)
         else:
             logging.info("")
-
-
-if __name__ == "__main__":
-    print("Backing up targets to Starport. Output will be logged to " + log_dir)
-    with_logging(run_backup)

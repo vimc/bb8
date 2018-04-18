@@ -3,7 +3,9 @@ This repository is a set of bash and Python scripts that wrap around rsync.
 
 # Configuration
 bb8 backs up data to another server, which we call the Starport, via ssh.
-Before running any scripts, bb8 needs a JSON configuration file. It should live in this repo at `./etc/config.json`.
+bb8 requires a "source" configuration file that lists all targets. Then, when we
+set up a particular machine to either backup or restore, we choose which targets
+we want to backup and/or restore on this machine.
 
 ## Sample configuration file
 Here's a sample configuration file. It should be mostly self explanatory.
@@ -28,50 +30,56 @@ Here's a sample configuration file. It should be mostly self explanatory.
 
 ## Targets
 Targets are what should be backed up (and restored). Each target must specify a
-"type", which can be `directory` or `named_volume`. Each of these
-requires further options.
+"type", which can be `directory` or `named_volume`, and a name, which is unique
+across all targets. Each type of target requires further options.
 
 ### Directory
 Simplest option. Requires a `path` to a directory.
 
 ### Named volume
-Requires the `name` of the volume.
-
-# Scripts
-So that bb8 can communicate with the Starport via ssh,
- we first need to generate a key pair which we store in the vault, then add the public key to the authorized_keys
- file on Starport. This is done by running `./setup_starport.sh` on the Starport. To run backups
-  bb8 needs the corresponding private key and a JSON configuration file.
- When bb8 has been configured, these live in this repo at `./etc/config.json` and `./etc/id_rsa`, respectively.
-There are six entrypoints to the backup module.
-
-1. `setup_starport.sh`: To be run on Starport. So that bb8 can communicate with the Starport via ssh,
- we first need to generate a key pair which
- we store in the vault, then add the public key to the authorized_keys
- file on Starport. You will be prompted for Vault (GitHub) access token. Should be run as the user you want to connect
- via ssh with.
-1. `setup_config.py`: This allows the user to choose which target should be backed up and/or restored on this machine
-1. `setup.sh`: This creates a user `bb8`, installs dependencies and then reads secrets from the vault and stores them
-   in `./etc`. You will be prompted for Vault (GitHub) access token. Must be run as root.
-1. `backup.py`: Runs a one-off backup. Output is logged to this repo at `./log/.` Should be run as the bb8 user.
-1. `backup.sh`: Creates a lock directory and runs a one-off backup, then removes lock directory.
- If a lock directory exists and there is a running process, exits without doing anything.
-  If a lock file exists and no running process, removes the lock directory.
-1. `schedule.py`: Creates a cron job that runs backup.sh every hour and logs to `./log`. Must be run as root.
-1. `restore.py`:  Restores the configured targets. Creates directories and volumes if they don't exist.
+`volume`: The name of the volume.
 
 # Setup
+## Setup starport
+So that bb8 can communicate with the Starport via ssh, we first need to 
+generate a key pair which we store in the vault, then add the public key to 
+the authorized_keys file on Starport. This is done by running 
+`./setup_starport.sh` on the Starport. To run backups bb8 needs the  
+corresponding private key and a JSON configuration file. During `setup.sh` these
+are pulled from the vault and stored in the ssh volume.
+
+## Setup leaf machine
 Note: Montagu specific setup instructions here: https://github.com/vimc/montagu-bb8.
 If setting up Montagu backup, follow those instructions first. Then, from this directory:
 
-1. run `./setup_config.py` as root to configure targets. This takes as argument one config file as described above, and
-a space separated list of targets from that file.
-2. run `./setup.sh` as root.
+```
+./setup.sh PATH_TO_SOURCE_CONFIG [TARGET ...]
+```
 
-NB: The `bb8` group now owns the directory, so to enable pulling from git without `sudo`,
- add your user to the `bb8` group
+This builds a new docker image. It includes the source config, filtered to 
+the requested targets, and the SSL secrets from the Vault. For this reason, 
+it is important that you do not push this image to any remote registry.
 
-3. Use one of the entry points listed above to backup, schedule backups, or restore.
+Once the docker image is built, the setup script also creates required 
+volumes for bb8, and invokes the built image to dump out the SSH key and 
+known hosts file that will be required for the rsync container.
+
+# Using bb8
+You can invoke the image built by setup.sh with the `./bb8` wrapper script. e.g.
+
+```
+./bb8 backup
+```
+
+or to see all options, just:
+
+```
+./bb8
+```
+
+## Schedule backups
+`schedule.sh`: Creates a cron job that backs up every hour and logs to the 
+`bb8_logs` volume. Must be run as root.
 
 # Tests
 
