@@ -19,7 +19,7 @@ function delete_secrets {
     rm -r ${HERE}/secrets
 }
 trap delete_secrets SIGINT EXIT
-./obtain_secrets.py
+${HERE}/obtain_secrets.py
 
 # Copy config
 cp "$source_config_path" source-config.json
@@ -27,7 +27,7 @@ cp "$source_config_path" source-config.json
 docker build --build-arg "TARGETS=$targets" --tag bb8 .
 docker volume create bb8_ssh
 docker volume create bb8_logs
-./bb8 init
+${HERE}/bb8 init
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
