@@ -41,11 +41,12 @@ Simplest option. Requires a `path` to a directory.
 
 # Setup
 ## Setup starport
-So that bb8 can communicate with the Starport via ssh,
- we first need to generate a key pair which we store in the vault, then add the public key to the authorized_keys
- file on Starport. This is done by running `./setup_starport.sh` on the Starport. To run backups
-  bb8 needs the corresponding private key and a JSON configuration file.
- When bb8 has been configured, these live in this repo at `./etc/config.json` and `./etc/id_rsa`, respectively.
+So that bb8 can communicate with the Starport via ssh, we first need to 
+generate a key pair which we store in the vault, then add the public key to 
+the authorized_keys file on Starport. This is done by running 
+`./setup_starport.sh` on the Starport. To run backups bb8 needs the  
+corresponding private key and a JSON configuration file. During `setup.sh` these
+are pulled from the vault and stored in the ssh volume.
 
 ## Setup leaf machine
 Note: Montagu specific setup instructions here: https://github.com/vimc/montagu-bb8.
@@ -79,17 +80,6 @@ or to see all options, just:
 ## Schedule backups
 `schedule.sh`: Creates a cron job that backs up every hour and logs to the 
 `bb8_logs` volume. Must be run as root.
-
-# Setup record
-
-1. run `./setup_config.py` as root to configure targets. This takes as argument one config file as described above, and
-a space separated list of targets from that file.
-2. run `./setup.sh` as root.
-
-NB: The `bb8` group now owns the directory, so to enable pulling from git without `sudo`,
- add your user to the `bb8` group
-
-3. Use one of the entry points listed above to backup, schedule backups, or restore.
 
 # Tests
 

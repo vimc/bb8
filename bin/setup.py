@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Usage:
-  setup_config.py [TARGET ...]
+  setup.py [TARGET ...]
 """
 
 import json
