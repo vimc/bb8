@@ -46,7 +46,7 @@ def get_volume_args(settings, local_volume, volume_mode):
 
 
 def get_remote_dir(starport):
-    return "bb8@{}:{}".format(starport["addr"], starport["backup_location"])
+    return "{user}@{addr}:{backup_location}".format(**starport)
 
 
 # local_volume can be an absolute path or a named volume
