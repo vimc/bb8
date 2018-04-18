@@ -3,8 +3,6 @@ import logging
 
 import docker
 
-from logger import with_logging
-from settings import load_settings, log_dir
 from docker_rsync import backup_volume
 from settings import load_settings
 
@@ -22,4 +20,5 @@ def run_backup():
         if target.options.backup:
             backup_volume(settings, target.mount_id)
         else:
-            logging.info("")
+            logging.info(f"  (Skipping backing up {target.id} - backup is "
+                         f"false in config)")
