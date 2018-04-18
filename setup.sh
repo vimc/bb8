@@ -28,7 +28,7 @@ docker build --build-arg "TARGETS=$targets" --tag bb8 .
 docker volume create bb8_ssh
 docker volume create bb8_logs
 ${HERE}/bb8 init
-ln -s $(realpath ${HERE}/bb8) /usr/local/bin/bb8
+ln -sf $(realpath ${HERE}/bb8) /usr/local/bin/bb8
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
