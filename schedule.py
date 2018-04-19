@@ -4,7 +4,7 @@ from os.path import abspath, dirname, join, isfile
 import sys
 from crontab import CronTab
 
-from settings import log_dir
+from bin.settings import log_dir
 
 tab_path = "/etc/cron.d/bb8"
 

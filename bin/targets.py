@@ -1,4 +1,3 @@
-import logging
 import docker
 
 
@@ -34,14 +33,9 @@ class NamedVolumeTarget:
         return self.volume
 
     def _volume_exists(self):
-        try:
-            self.docker.volumes.get(self.volume)
-            return True
-        except docker.errors.NotFound:
-            return False
+        return self.volume in [x.name for x in self.docker.volumes.list()]
 
     def before_restore(self):
         if not self._volume_exists():
-            logging.info("Creating docker volume with name '{}'".format(
-                self.volume))
+            print("Creating docker volume with name '{}'".format(self.volume))
             self.docker.volumes.create(self.volume)
