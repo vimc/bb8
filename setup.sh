@@ -28,10 +28,18 @@ docker build --build-arg "TARGETS=$targets" --tag bb8 .
 docker volume create bb8_ssh
 docker volume create bb8_logs
 ${HERE}/bb8 init
-ln -sf $(realpath ${HERE}/bb8) /usr/local/bin/bb8
+
+# Setup link
+path=$(realpath ${HERE}/bb8)
+link_path=/usr/local/bin/bb8
+link_status=$(readlink -- $link_path)
+if [ "$link_status" != "$path" ]; then
+    echo "Creating symlink at $link_path"
+    ln -sf $path $link_path
+fi
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
 echo "backup:           Run bb8 backup"
 echo "restore:          Run bb8 restore"
-echo "schedule backups: Run sudo ./schedule.sh"
+echo "schedule backups: Run sudo ./schedule"

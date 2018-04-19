@@ -78,7 +78,7 @@ or to see all options, just:
 ```
 
 ## Schedule backups
-`schedule.sh`: Creates a cron job that backs up every hour and logs to the 
+`./schedule`: Creates a cron job that backs up every hour and logs to the 
 `bb8_logs` volume. Must be run as root.
 
 # Tests

@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+contents = "@hourly root bb8 backup # BB8 backup"
+path = "/etc/cron.d/bb8"
+
+with open(path, 'r') as f:
+    current = f.read()
+
+if current == contents:
+    print("Backup already scheduled")
+else:
+    with open(path, 'w') as f:
+        f.write(contents)
+    print("Scheduled hourly backups ☺️")
