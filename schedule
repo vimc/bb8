@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-contents = "@hourly root bb8 backup # BB8 backup"
+contents = "@hourly root bb8 backup # BB8 backup\n"
 path = "/etc/cron.d/bb8"
 
 with open(path, 'r') as f:
