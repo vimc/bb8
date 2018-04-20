@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import logging
 
-import docker
-
 from docker_rsync import restore_volume
 from settings import load_settings
 
@@ -20,5 +18,5 @@ def run_restore():
             target.before_restore()
             restore_volume(settings, target.mount_id)
         else:
-            logging.info(f"  (Skipping restoring {target.id} - restore is "
-                         f"false in config)")
+            template = "  (Skipping restoring {} - restore is false in config)"
+            logging.info(template.format(target.name))

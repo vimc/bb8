@@ -20,5 +20,5 @@ def run_backup():
         if target.options.backup:
             backup_volume(settings, target.mount_id)
         else:
-            logging.info(f"  (Skipping backing up {target.id} - backup is "
-                         f"false in config)")
+            template = "  (Skipping backing up {} - backup is false in config)"
+            logging.info(template.format(target.name))
