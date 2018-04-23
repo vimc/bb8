@@ -2,7 +2,7 @@
 set -e
 
 if [[ ($# -eq 0) ]]; then
-    echo "Usage: ./setup.sh PATH_TO_SOURCE_CONFIG [TARGET ...]"
+    echo "Usage: ./setup PATH_TO_SOURCE_CONFIG [TARGET ...]"
     exit -1;
 fi
 

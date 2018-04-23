@@ -14,4 +14,4 @@ docker build --rm -t $IMAGE_NAME $HERE
 docker run --rm -v ${BB8_ROOT}:/src \
        -e VAULT_AUTH_GITHUB_TOKEN=$VAULT_AUTH_GITHUB_TOKEN \
        $IMAGE_NAME \
-       /src/setup.sh
+       /src/setup
