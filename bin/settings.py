@@ -1,7 +1,7 @@
 import json
 from os.path import join, abspath
 
-from targets import DirectoryTarget, NamedVolumeTarget
+from targets import DirectoryTarget, NamedVolumeTarget, TargetOptions
 
 root_path = "/bb8/etc/"
 source_config_path = join(root_path, "source-config.json")
@@ -24,10 +24,11 @@ class Settings:
     @classmethod
     def parse_target(cls, data):
         t = data["type"]
+        options = TargetOptions(data)
         if t == "directory":
-            return DirectoryTarget(data["name"], data["path"])
+            return DirectoryTarget(data["name"], data["path"], options)
         elif t == "named_volume":
-            return NamedVolumeTarget(data["name"], data["volume"])
+            return NamedVolumeTarget(data["name"], data["volume"], options)
         else:
             raise Exception("Unsupported target type: " + t)
 

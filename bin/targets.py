@@ -1,10 +1,17 @@
 import docker
 
 
+class TargetOptions:
+    def __init__(self, data):
+        self.backup = data.get("backup", True)
+        self.restore = data.get("restore", True)
+
+
 class DirectoryTarget:
-    def __init__(self, name, path):
+    def __init__(self, name, path, options):
         self.name = name
         self.path = path
+        self.options = options
 
     @property
     def id(self):
@@ -19,9 +26,10 @@ class DirectoryTarget:
 
 
 class NamedVolumeTarget:
-    def __init__(self, name, volume, docker_client=None):
+    def __init__(self, name, volume, options, docker_client=None):
         self.name = name
         self.volume = volume
+        self.options = options
         self.docker = docker_client or docker.client.from_env()
 
     @property
