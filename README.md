@@ -1,5 +1,30 @@
 # bb8
-This repository is a set of bash and Python scripts that wrap around rsync.
+A tool for backing and restoring docker volumes over rsync.
+
+# Using bb8
+You can invoke the image built by setup with the `./bb8` wrapper script. e.g.
+
+```
+bb8 backup
+```
+
+or to see all options, just:
+
+```
+bb8
+```
+
+## Schedule backups
+`./schedule`: Creates a cron job that backs up every hour and logs to the 
+`bb8_logs` volume. Must be run as root.
+
+# Tests
+Run tests:
+
+```
+pip3 install -r requirements-dev.txt
+pytest
+```
 
 # Configuration
 bb8 backs up data to another server, which we call the Starport, via ssh.
@@ -64,28 +89,3 @@ Once the docker image is built, the setup script also creates required
 volumes for bb8, and invokes the built image to dump out the SSH key and 
 known hosts file that will be required for the rsync container.
 
-# Using bb8
-You can invoke the image built by setup with the `./bb8` wrapper script. e.g.
-
-```
-bb8 backup
-```
-
-or to see all options, just:
-
-```
-bb8
-```
-
-## Schedule backups
-`./schedule`: Creates a cron job that backs up every hour and logs to the 
-`bb8_logs` volume. Must be run as root.
-
-# Tests
-
-Run the test suite with
-
-```
-pip3 install -r requirements-dev.txt
-nosetests3
-```
