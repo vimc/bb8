@@ -36,5 +36,6 @@ class TestNamedVolumeTarget(unittest.TestCase):
         vol.before_restore()
         self.assertTrue(vol._volume_exists())
 
+
 if __name__ == '__main__':
     unittest.main()
