@@ -2,7 +2,7 @@ import unittest
 
 import docker
 
-import targets
+from bin import targets
 
 
 class TestNamedVolumeTarget(unittest.TestCase):
