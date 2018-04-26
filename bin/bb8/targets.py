@@ -2,9 +2,17 @@ import docker
 
 
 class TargetOptions:
-    def __init__(self, data):
-        self.backup = data.get("backup", True)
-        self.restore = data.get("restore", True)
+    def __init__(self, backup, restore):
+        self.backup = backup
+        self.restore = restore
+
+    @classmethod
+    def from_data(cls, data):
+        return TargetOptions(data.get("backup", True),
+                             data.get("restore", True))
+
+    def __eq__(self, other):
+        return self.backup == other.backup and self.restore == other.restore
 
 
 class DirectoryTarget:
@@ -23,6 +31,11 @@ class DirectoryTarget:
 
     def before_restore(self):
         pass
+
+    def __eq__(self, other):
+        return self.id == other.id \
+               and self.path == other.path \
+               and self.options == other.options
 
 
 class NamedVolumeTarget:
@@ -47,3 +60,8 @@ class NamedVolumeTarget:
         if not self._volume_exists():
             print("Creating docker volume with name '{}'".format(self.volume))
             self.docker.volumes.create(self.volume)
+
+    def __eq__(self, other):
+        return self.id == other.id \
+               and self.volume == other.volume \
+               and self.options == other.options
