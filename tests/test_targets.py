@@ -33,10 +33,10 @@ class TestNamedVolumeTarget(object):
         assert vol._volume_exists()
 
     @classmethod
-    def remove_test_volume_if_exists(self):
+    def remove_test_volume_if_exists(cls):
         try:
-            vol = self.docker.volumes.get(self.dummy_volume_name)
+            vol = cls.docker.volumes.get(cls.dummy_volume_name)
             vol.remove()
-            print("Removed test volume {}".format(self.dummy_volume_name))
+            print("Removed test volume {}".format(cls.dummy_volume_name))
         except docker.errors.NotFound:
             pass
