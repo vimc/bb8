@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 import logging
 
-from bb8.docker_rsync import DockerRsync
-from bb8.settings import load_settings
+from .docker_rsync import DockerRsync
+from .settings import load_settings
 
 
-def run_restore(settings=load_settings(), rsync=DockerRsync()):
+def run_restore(settings_source=load_settings, rsync=DockerRsync()):
+    settings = settings_source()
     starport = settings.starport
     logging.info("Restoring from {}: ".format(starport["addr"]))
     logging.info("Remote directory: {}".format(starport["backup_location"]))

@@ -9,8 +9,8 @@ from .settings import load_settings
 client = docker.from_env()
 
 
-def run_backup(settings=None, rsync=DockerRsync()):
-    settings = settings or load_settings()
+def run_backup(settings_source=load_settings, rsync=DockerRsync()):
+    settings = settings_source()
     starport = settings.starport
     logging.info("Backing up to {}: ".format(starport["addr"]))
 
