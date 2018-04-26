@@ -2,23 +2,7 @@ from unittest.mock import MagicMock, call
 
 from bin.bb8.restore import run_restore
 from bin.bb8.backup import run_backup
-
-
-class Dynamic(object):
-    def __init__(self, label, **kwargs):
-        self.label = label
-        for key, value in kwargs.items():
-            setattr(self, key, value)
-
-    def __repr__(self):
-        return str(self.label)
-
-
-def mock_target(id, backup=True, restore=True, **kwargs):
-    return Dynamic(id, id=id, mount_id="mount-{}".format(id),
-                   name="name-{}".format(id),
-                   options=Dynamic("opt", backup=backup, restore=restore),
-                   **kwargs)
+from tests.mocks import mock_target, mock_settings, Dynamic
 
 
 def test_backup_is_only_called_for_targets_with_backup_set_to_true():
@@ -28,8 +12,7 @@ def test_backup_is_only_called_for_targets_with_backup_set_to_true():
         mock_target("b", backup=False),
         mock_target("c", backup=True)
     ]
-    starport = {"addr": "fake.starport.address"}
-    settings = Dynamic("settings", starport=starport, targets=targets)
+    settings = mock_settings(targets)
     rsync = Dynamic("rsync", backup_volume=MagicMock())
 
     # Test
@@ -49,11 +32,7 @@ def test_restore_is_only_called_for_targets_with_restore_set_to_true():
         mock_target("b", restore=False, before_restore=MagicMock()),
         mock_target("c", restore=True, before_restore=MagicMock())
     ]
-    starport = {
-        "addr": "fake.starport.address",
-        "backup_location": "fake_remote_directory"
-    }
-    settings = Dynamic("settings", starport=starport, targets=targets)
+    settings = mock_settings(targets)
     rsync = Dynamic("rsync", restore_volume=MagicMock())
 
     # Test

@@ -7,28 +7,39 @@ import docker
 
 from .logger import log_from_docker
 
-client = docker.from_env()
-
 
 class DockerRsync(object):
+    def __init__(self, client=docker.from_env()):
+        self.client = client
+
     def _run_rsync(self, volumes, from_path, to_path, relative):
-        # rsync options:
-        # -v = verbose - give info about what files are being transferred and a brief summary at the end
-        # -r = copy directories recursively
-        # -e = specify remote shell program explicitly (i.e. ssh as opposed to the default rsh)
-        # --delete = delete destination files not in source
-        # --info=progress2 - print overall progress
-        uid = getuid()
-        gid = getgid()
-        cmd = ["rsync", "-rv", "-e", "ssh", "--perms", "--owner", "--group", "--chown={}:{}".format(uid, gid),
-               from_path, to_path, "--delete", "--info=progress2"]
+        chown = "{}:{}".format(getuid(), getgid())
+        cmd = ["rsync",
+               # copy directories recursively
+               "-r",
+               # verbose - give info about what files are being transferred
+               # and a brief summary at the end
+               "-v",
+               # specify remote shell program explicitly (i.e. ssh as opposed
+               # to the default rsh)
+               "-e", "ssh",
+               "--perms", "--owner", "--group",
+               "--chown=" + chown,
+               # delete destination files not in source
+               "--delete",
+               # print overall progress
+               "--info=progress2",
+               from_path,
+               to_path
+               ]
         if relative:
             cmd.append("--relative")
 
         logging.debug("Running rsync in docker with: " + " ".join(cmd))
         logging.debug("Volume mapping: " + str(volumes))
-        container = client.containers.run("instrumentisto/rsync-ssh", command=cmd, volumes=volumes,
-                                          detach=True, remove=True)
+        container = self.client.containers.run("instrumentisto/rsync-ssh",
+                                               command=cmd, volumes=volumes,
+                                               detach=True, remove=True)
 
         try:
             log_from_docker(container)
@@ -64,5 +75,6 @@ class DockerRsync(object):
         remote_dir = self._get_remote_dir(starport)
         remote_path = "{}{}/".format(remote_dir, local_volume)
 
-        logging.info("Restoring from {} to {}".format(remote_path, local_volume))
+        logging.info(
+            "Restoring from {} to {}".format(remote_path, local_volume))
         self._run_rsync(volumes, remote_path, mounted_volume, False)
