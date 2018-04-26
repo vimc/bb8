@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
+
+echo "Usage: sudo ./setup_starport.sh PATH_TO_STARPORT BB8_USER"
+echo "Options:"
+echo  "-f     Force an overwrite of existing ssh credentials"
+echo ""
 
 if [[ $# -ne 2 ]] ; then
     echo 'Please pass starport directory and user as arguments'
