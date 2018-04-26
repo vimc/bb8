@@ -5,7 +5,7 @@ from os.path import join
 
 import docker
 
-from logger import log_from_docker
+from .logger import log_from_docker
 
 client = docker.from_env()
 

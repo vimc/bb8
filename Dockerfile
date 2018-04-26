@@ -1,8 +1,8 @@
 FROM python:3
 
 WORKDIR /bb8
-COPY bin/requirements.txt /bb8/requirements.txt
-RUN pip3 install -r /bb8/requirements.txt
+COPY bin/requirements.txt /bb8/
+RUN pip3 install -r requirements.txt
 
 COPY bin /bb8
 

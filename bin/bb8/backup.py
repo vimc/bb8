@@ -3,8 +3,8 @@ import logging
 
 import docker
 
-from docker_rsync import backup_volume
-from settings import load_settings
+from .docker_rsync import backup_volume
+from .settings import load_settings
 
 client = docker.from_env()
 

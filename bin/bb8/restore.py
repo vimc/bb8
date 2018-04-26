@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import logging
 
-from docker_rsync import restore_volume
-from settings import load_settings
+from .docker_rsync import restore_volume
+from .settings import load_settings
 
 
 def run_restore():

@@ -11,10 +11,10 @@ from os.path import join
 
 from docopt import docopt
 
-from backup import run_backup
-from logger import with_logging
-from restore import run_restore
-from settings import log_dir, ssh_key_path, known_hosts_path, root_path
+from bb8.backup import run_backup
+from bb8.logger import with_logging
+from bb8.restore import run_restore
+from bb8.settings import log_dir, ssh_key_path, known_hosts_path, root_path
 
 
 def run():
