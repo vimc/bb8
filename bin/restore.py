@@ -2,10 +2,12 @@
 import logging
 
 from docker_rsync import restore_volume
-from settings import load_settings
+from settings import load_settings, log_dir
 
 
 def run_restore():
+    logging.info("Restoring targets from Starport. Output will be logged "
+                 "to {}".format(log_dir))
     settings = load_settings()
     starport = settings.starport
     logging.info("Restoring from {}: ".format(starport["addr"]))

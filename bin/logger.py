@@ -1,5 +1,5 @@
 import logging
-from datetime import date
+from datetime import date, datetime
 from os import makedirs
 from os.path import join, isdir
 from subprocess import Popen, PIPE
@@ -15,7 +15,7 @@ def ensure_dir_exists(dir_path):
 def with_logging(do):
     ensure_dir_exists(log_dir)
     # Log everything to a rotating file
-    filename = join(log_dir, "bb8_{}.log".format(date.today().isoformat()))
+    filename = join(log_dir, "bb8_{}.log".format(datetime.now().isoformat()))
     log_format = "%(asctime)s    %(levelname)s    %(message)s"
     logging.basicConfig(filename=filename, level=logging.DEBUG, format=log_format)
     logging.info("*" * 60)
