@@ -32,11 +32,9 @@ ${HERE}/bb8 init
 # Setup link
 path=$(realpath ${HERE}/bb8)
 link_path=/usr/local/bin/bb8
-link_status=$(readlink -- $link_path)
-if [ "$link_status" != "$path" ]; then
-    echo "Creating symlink at $link_path"
-    ln -sf $path $link_path
-fi
+
+echo "Creating symlink at $link_path"
+ln -sf $path $link_path
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
