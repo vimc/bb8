@@ -2,16 +2,13 @@
 
 """
 Usage:
-  main.py backup
-  main.py restore
-  main.py init
-  main.py log --list [--limit=<number>]
-  main.py log [--version=<version>]
+  bb8 backup
+  bb8 restore
+  bb8 init
+  bb8 log list [--limit=<number>]
+  bb8 log show [VERSION]
 
 Options:
-  --version=<version>  Which version of the logs to display (defaults to most
-                       recent)
-  --list               Show all available log files (versions)
   --limit=<number>     How many log files to return [default: 10]
 """
 import logging

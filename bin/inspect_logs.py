@@ -33,11 +33,11 @@ def view_logs(version):
 
 
 def inspect_logs(args):
-    if args["--list"]:
+    if args["list"]:
         n = int(args["--limit"])
         list_logs(n)
     else:
-        version = args["--version"] or get_latest_version()
+        version = args["VERSION"] or get_latest_version()
         if version:
             view_logs(version)
         else:
