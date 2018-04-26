@@ -31,6 +31,21 @@ function cleanup {
 
 trap cleanup EXIT
 
+while getopts f o; do
+    force=true
+done
+
+if vault read secret/annex/id_rsa > /dev/null ; then
+    if [ "$force" != true ] ; then
+        echo 'Starport has already been set up and keys for bb8 generated'
+        echo 'If you want to override these keys pass the -f command'
+        echo 'This will invalidate the keys of any running bb8 instances'
+        exit 1
+    else
+        echo 'Overriding existing ssh credentials'
+    fi
+fi
+
 ssh-keygen -f $KEY_PATH/id_rsa -q -N ""
 vault write secret/annex/id_rsa value=@$KEY_PATH/id_rsa
 vault write secret/annex/id_rsa.pub value=@$KEY_PATH/id_rsa.pub
