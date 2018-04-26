@@ -45,7 +45,7 @@ So that bb8 can communicate with the Starport via ssh, we first need to
 generate a key pair which we store in the vault, then add the public key to 
 the authorized_keys file on Starport. This is done by running 
 `./setup_starport.sh` on the Starport. To run backups bb8 needs the  
-corresponding private key and a JSON configuration file. During `setup.sh` these
+corresponding private key and a JSON configuration file. During `setup` these
 are pulled from the vault and stored in the ssh volume.
 
 ## Setup leaf machine
@@ -53,7 +53,7 @@ Note: Montagu specific setup instructions here: https://github.com/vimc/montagu-
 If setting up Montagu backup, follow those instructions first. Then, from this directory:
 
 ```
-./setup.sh PATH_TO_SOURCE_CONFIG [TARGET ...]
+./setup PATH_TO_SOURCE_CONFIG [TARGET ...]
 ```
 
 This builds a new docker image. It includes the source config, filtered to 
@@ -65,20 +65,20 @@ volumes for bb8, and invokes the built image to dump out the SSH key and
 known hosts file that will be required for the rsync container.
 
 # Using bb8
-You can invoke the image built by setup.sh with the `./bb8` wrapper script. e.g.
+You can invoke the image built by setup with the `./bb8` wrapper script. e.g.
 
 ```
-./bb8 backup
+bb8 backup
 ```
 
 or to see all options, just:
 
 ```
-./bb8
+bb8
 ```
 
 ## Schedule backups
-`schedule.sh`: Creates a cron job that backs up every hour and logs to the 
+`./schedule`: Creates a cron job that backs up every hour and logs to the 
 `bb8_logs` volume. Must be run as root.
 
 # Tests

@@ -16,5 +16,9 @@ def run_restore():
     targets = list(t for t in settings.targets)
     for target in targets:
         logging.info("- " + target.id)
-        target.before_restore()
-        restore_volume(settings, target.mount_id)
+        if target.options.restore:
+            target.before_restore()
+            restore_volume(settings, target.mount_id)
+        else:
+            template = "  (Skipping restoring {} - restore is false in config)"
+            logging.info(template.format(target.name))
