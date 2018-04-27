@@ -50,8 +50,7 @@ class DockerRsync(object):
         logging.debug("Files will be owned by user id: " + str(local_user))
         container = self.client.containers.run("instrumentisto/rsync-ssh",
                                                command=cmd, volumes=volumes,
-                                               detach=True, remove=True,
-                                               user=local_user)
+                                               detach=True, remove=True)
 
         try:
             log_from_docker(container)
