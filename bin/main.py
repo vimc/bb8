@@ -17,11 +17,10 @@ from os.path import join
 
 from docopt import docopt
 
-from backup import run_backup
-from inspect_logs import inspect_logs
-from logger import with_logging
-from restore import run_restore
-from settings import ssh_key_path, known_hosts_path, root_path
+from bb8.backup import run_backup
+from bb8.inspect_logs import inspect_logs
+from bb8.restore import run_restore
+from bb8.settings import ssh_key_path, known_hosts_path, root_path
 
 
 def init():

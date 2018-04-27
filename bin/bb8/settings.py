@@ -1,7 +1,7 @@
 import json
 from os.path import join, abspath
 
-from targets import DirectoryTarget, NamedVolumeTarget, TargetOptions
+from .targets import DirectoryTarget, NamedVolumeTarget, TargetOptions
 
 root_path = "/bb8/etc/"
 source_config_path = join(root_path, "source-config.json")

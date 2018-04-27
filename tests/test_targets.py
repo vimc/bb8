@@ -1,6 +1,6 @@
 import docker
 
-from bin import targets
+from bin.bb8 import targets
 
 
 # noinspection PyProtectedMember

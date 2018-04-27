@@ -4,12 +4,9 @@ Usage:
   setup.py [TARGET ...]
 """
 
-import json
-from shutil import copy
-
 from docopt import docopt
 
-from settings import *
+from bb8.settings import *
 
 
 def check_user_input(config, desired_targets):

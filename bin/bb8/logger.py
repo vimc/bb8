@@ -4,7 +4,7 @@ from os import makedirs
 from os.path import join, isdir
 from subprocess import Popen, PIPE
 
-from settings import log_dir
+from .settings import log_dir
 
 
 def ensure_dir_exists(dir_path):
