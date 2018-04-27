@@ -2,14 +2,14 @@
 
 set -e
 
-echo "Usage: sudo ./setup_starport.sh PATH_TO_STARPORT BB8_USER"
+echo "Usage: sudo ./setup_starport PATH_TO_STARPORT BB8_USER"
 echo "Options:"
 echo  "-f     Force an overwrite of existing ssh credentials"
 echo ""
 
 if [[ $# -ne 2 ]] ; then
     echo 'Please pass starport directory and user as arguments'
-    echo 'eg: sudo ./setup_starport.sh /mnt/data/starport montagu'
+    echo 'eg: sudo ./setup_starport /mnt/data/starport montagu'
     exit 0
 fi
 
