@@ -14,8 +14,8 @@ log_dir = '/bb8/logs/'
 
 
 class Settings:
-    def __init__(self):
-        with open(config_path, 'r') as f:
+    def __init__(self, path=config_path):
+        with open(path, 'r') as f:
             config = json.load(f)
 
         self.starport = config["starport"]
@@ -24,7 +24,7 @@ class Settings:
     @classmethod
     def parse_target(cls, data):
         t = data["type"]
-        options = TargetOptions(data)
+        options = TargetOptions.from_data(data)
         if t == "directory":
             return DirectoryTarget(data["name"], data["path"], options)
         elif t == "named_volume":

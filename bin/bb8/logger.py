@@ -2,7 +2,6 @@ import logging
 from datetime import date, datetime
 from os import makedirs
 from os.path import join, isdir
-from subprocess import Popen, PIPE
 
 from .settings import log_dir
 
@@ -34,14 +33,3 @@ def with_logging(do):
 def log_from_docker(container):
     for log in container.logs(stream=True):
         logging.info(log.strip().decode("UTF-8"))
-
-
-def run_cmd_with_logging(cmd):
-    with Popen(cmd, stdout=PIPE, stderr=PIPE, bufsize=1, universal_newlines=True) as p:
-        for line in p.stdout:
-            logging.info(line.strip())
-        for line in p.stderr:
-            logging.error(line.strip())
-
-    if p.returncode != 0:
-        raise Exception("rsync returned error code {}".format(p.returncode))
