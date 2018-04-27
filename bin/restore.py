@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 import logging
 
-from .docker_rsync import DockerRsync
-from .settings import load_settings, log_dir
+from docker_rsync import restore_volume
+from settings import load_settings, log_dir
 
 
-def run_restore(settings_source=load_settings, rsync=DockerRsync()):
+def run_restore():
     logging.info("Restoring targets from Starport. Output will be logged "
                  "to {}".format(log_dir))
-    settings = settings_source()
+    settings = load_settings()
     starport = settings.starport
     logging.info("Restoring from {}: ".format(starport["addr"]))
     logging.info("Remote directory: {}".format(starport["backup_location"]))
@@ -18,7 +18,7 @@ def run_restore(settings_source=load_settings, rsync=DockerRsync()):
         logging.info("- " + target.id)
         if target.options.restore:
             target.before_restore()
-            rsync.restore_volume(settings, target.mount_id)
+            restore_volume(settings, target.mount_id)
         else:
             template = "  (Skipping restoring {} - restore is false in config)"
             logging.info(template.format(target.name))
