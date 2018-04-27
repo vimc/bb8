@@ -20,7 +20,7 @@ def run_backup(settings_source=load_settings, rsync=DockerRsync()):
     for target in targets:
         logging.info("- " + target.id)
         if target.options.backup:
-            rsync.backup_volume(settings, target.mount_id)
+            rsync.backup_volume(settings, target.mount_id, target.options.user)
         else:
             template = "  (Skipping backing up {} - backup is false in config)"
             logging.info(template.format(target.name))

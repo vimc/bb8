@@ -27,10 +27,10 @@ class TestDockerRsync(object):
         sut._get_volume_args = MagicMock(wraps=sut._get_volume_args)
 
         # Test
-        sut.backup_volume(mock_settings(), "local")
+        sut.backup_volume(mock_settings(), "local", "me")
 
         # Check
-        sut._run_rsync.assert_called_once_with(ANY, "local", ANY, True)
+        sut._run_rsync.assert_called_once_with(ANY, "local", ANY, True, "me")
         sut._get_volume_args.assert_called_once_with("local", "ro")
 
     def test_restore_volume(self):
@@ -40,8 +40,8 @@ class TestDockerRsync(object):
         sut._get_volume_args = MagicMock(wraps=sut._get_volume_args)
 
         # Test
-        sut.restore_volume(mock_settings(), "local")
+        sut.restore_volume(mock_settings(), "local", 999)
 
         # Check
-        sut._run_rsync.assert_called_once_with(ANY, ANY, "/local", False)
+        sut._run_rsync.assert_called_once_with(ANY, ANY, "/local", False, 999)
         sut._get_volume_args.assert_called_once_with("local", "rw")

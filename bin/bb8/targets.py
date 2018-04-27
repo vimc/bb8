@@ -2,14 +2,16 @@ import docker
 
 
 class TargetOptions:
-    def __init__(self, backup, restore):
+    def __init__(self, backup, restore, user):
         self.backup = backup
         self.restore = restore
+        self.user = user
 
     @classmethod
     def from_data(cls, data):
         return TargetOptions(data.get("backup", True),
-                             data.get("restore", True))
+                             data.get("restore", True),
+                             data.get("user", "root"))
 
     def __eq__(self, other):
         return self.backup == other.backup and self.restore == other.restore

@@ -18,7 +18,7 @@ def run_restore(settings_source=load_settings, rsync=DockerRsync()):
         logging.info("- " + target.id)
         if target.options.restore:
             target.before_restore()
-            rsync.restore_volume(settings, target.mount_id)
+            rsync.restore_volume(settings, target.mount_id, target.options.user)
         else:
             template = "  (Skipping restoring {} - restore is false in config)"
             logging.info(template.format(target.name))
