@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import logging
-from os import getuid, getgid
+from io import StringIO
 from os.path import join
 
 import docker
@@ -41,9 +41,17 @@ class DockerRsync(object):
         if relative:
             cmd.append("--relative")
 
+        dockerfile = """
+FROM instrumentisto/rsync-ssh
+RUN groupadd -r bb8 --gid={user} && useradd -r -g bb8 --uid={user} bb8
+        """.format(user=local_user)
+
+        with StringIO(dockerfile) as f:
+            image = self.client.images.build(fileobj=f)
+
         logging.debug("Running rsync in docker with: " + " ".join(cmd))
         logging.debug("Volume mapping: " + str(volumes))
-        container = self.client.containers.run("instrumentisto/rsync-ssh",
+        container = self.client.containers.run(image.id,
                                                command=cmd, volumes=volumes,
                                                detach=True, remove=True,
                                                user=local_user)
