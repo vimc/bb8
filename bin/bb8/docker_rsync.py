@@ -37,7 +37,7 @@ class DockerRsync(object):
                # alter owner and group but chowning them to the local user.
                "--owner",
                "--group",
-               "--chown", "{user}:{user}".format(local_user)
+               "--chown", "{}:{}".format(local_user, local_user),
                # directories to work with
                from_path,
                to_path
@@ -47,7 +47,7 @@ class DockerRsync(object):
 
         logging.debug("Running rsync in docker with: " + " ".join(cmd))
         logging.debug("Volume mapping: " + str(volumes))
-        container = self.client.containers.run(image.id,
+        container = self.client.containers.run("instrumentisto/rsync-ssh",
                                                command=cmd, volumes=volumes,
                                                detach=True, remove=True,
                                                user=local_user)
