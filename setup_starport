@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
-set -ex
+set -e
+
+echo "Usage: sudo ./setup_starport PATH_TO_STARPORT BB8_USER"
+echo "Options:"
+echo  "-f     Force an overwrite of existing ssh credentials"
+echo ""
 
 if [[ $# -ne 2 ]] ; then
     echo 'Please pass starport directory and user as arguments'
-    echo 'eg: sudo ./setup_starport.sh /mnt/data/starport montagu'
+    echo 'eg: sudo ./setup_starport /mnt/data/starport montagu'
     exit 0
 fi
 
@@ -30,6 +35,21 @@ function cleanup {
 }
 
 trap cleanup EXIT
+
+while getopts f o; do
+    force=true
+done
+
+if vault read secret/annex/id_rsa > /dev/null ; then
+    if [ "$force" != true ] ; then
+        echo 'Starport has already been set up and keys for bb8 generated'
+        echo 'If you want to override these keys pass the -f option'
+        echo 'This will invalidate the ssh credentials of any running bb8 instances'
+        exit 1
+    else
+        echo 'Overriding existing ssh credentials'
+    fi
+fi
 
 ssh-keygen -f $KEY_PATH/id_rsa -q -N ""
 vault write secret/annex/id_rsa value=@$KEY_PATH/id_rsa
