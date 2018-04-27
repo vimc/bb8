@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import logging
-from os import getuid, getgid
 from os.path import join
 
 import docker
@@ -12,13 +11,15 @@ class DockerRsync(object):
     def __init__(self, client=docker.from_env()):
         self.client = client
 
-    def _run_rsync(self, volumes, from_path, to_path, relative, local_user):
+    def _run_rsync(self, mode, volumes, from_path, to_path, local_user="root"):
         """Rsyncs from from_path to to_path. In a backup, from_path with be
         local and to_path will be remote. In a restore, the reverse is true.
 
-        The local path will be mounted as a volume (using the volumes arg)
-        and read from/written to as local_user. local_user can be a numeric
-        UID or a username."""
+        When restoring you can provide a local_user. Restored files will be
+        owned by this user."""
+
+        if mode not in ["backup", "restore"]:
+            raise Exception("Invalid rsync mode: {}".format(mode))
 
         cmd = ["rsync",
                # copy directories recursively
@@ -38,15 +39,20 @@ class DockerRsync(object):
                from_path,
                to_path
                ]
-        if relative:
+
+        if mode == "backup":
+            # Not sure what this does
             cmd.append("--relative")
+        elif mode == "restore":
+            # set owner when restoring
+            cmd.append("--chown={}:{}".format(local_user, local_user))
 
         logging.debug("Running rsync in docker with: " + " ".join(cmd))
         logging.debug("Volume mapping: " + str(volumes))
+
         container = self.client.containers.run("instrumentisto/rsync-ssh",
                                                command=cmd, volumes=volumes,
-                                               detach=True, remove=True,
-                                               user=local_user)
+                                               detach=True, remove=True)
 
         try:
             log_from_docker(container)
@@ -66,13 +72,13 @@ class DockerRsync(object):
         return "{user}@{addr}:{backup_location}".format(**starport)
 
     # local_volume can be an absolute path or a named volume
-    def backup_volume(self, settings, local_volume, local_user):
+    def backup_volume(self, settings, local_volume):
         starport = settings.starport
         volumes = self._get_volume_args(local_volume, "ro")
 
         remote_dir = self._get_remote_dir(starport)
 
-        self._run_rsync(volumes, local_volume, remote_dir, True, local_user)
+        self._run_rsync("backup", volumes, local_volume, remote_dir)
 
     def restore_volume(self, settings, local_volume, local_user):
         starport = settings.starport
@@ -84,4 +90,5 @@ class DockerRsync(object):
 
         logging.info(
             "Restoring from {} to {}".format(remote_path, local_volume))
-        self._run_rsync(volumes, remote_path, mounted_volume, False, local_user)
+        self._run_rsync("restore", volumes, remote_path, mounted_volume,
+                        local_user)

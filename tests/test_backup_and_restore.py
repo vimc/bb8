@@ -20,8 +20,8 @@ def test_backup_is_only_called_for_targets_with_backup_set_to_true():
 
     # Check
     rsync.backup_volume.assert_has_calls([
-        call(settings, "mount-a", "root"),
-        call(settings, "mount-c", "root"),
+        call(settings, "mount-a"),
+        call(settings, "mount-c"),
     ])
 
 

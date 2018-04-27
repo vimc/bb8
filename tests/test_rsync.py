@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, ANY
 
+import pytest
+
 from bin.bb8.docker_rsync import DockerRsync
 from tests.mocks import mock_starport_settings, mock_settings
 
@@ -27,10 +29,10 @@ class TestDockerRsync(object):
         sut._get_volume_args = MagicMock(wraps=sut._get_volume_args)
 
         # Test
-        sut.backup_volume(mock_settings(), "local", "me")
+        sut.backup_volume(mock_settings(), "local")
 
         # Check
-        sut._run_rsync.assert_called_once_with(ANY, "local", ANY, True, "me")
+        sut._run_rsync.assert_called_once_with("backup", ANY, "local", ANY)
         sut._get_volume_args.assert_called_once_with("local", "ro")
 
     def test_restore_volume(self):
@@ -43,5 +45,12 @@ class TestDockerRsync(object):
         sut.restore_volume(mock_settings(), "local", 999)
 
         # Check
-        sut._run_rsync.assert_called_once_with(ANY, ANY, "/local", False, 999)
+        sut._run_rsync.assert_called_once_with("restore", ANY, ANY, "/local",
+                                               999)
         sut._get_volume_args.assert_called_once_with("local", "rw")
+
+    def test_run_rsync_fails_if_unknown_mode(self):
+        sut = DockerRsync()
+        v = sut._get_volume_args("vol", "ro")
+        with pytest.raises(Exception):
+            sut._run_rsync("bad", v, "from", "to")
