@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
-set -ex
+set -e
+
+container_name="bb8"
+
+if [[ ($# -gt 0) ]]; then
+   if [ "$1" = "log" ] ; then
+    container_name="$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 32)"
+   fi
+fi
 
 docker run \
     --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v bb8_ssh:/bb8/etc/.ssh \
     -v bb8_logs:/bb8/logs \
-    --name bb8 \
+    --name $container_name \
     bb8 "$@"
