@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import logging
-from io import BytesIO
 from os.path import join
 
 import docker
@@ -35,21 +34,16 @@ class DockerRsync(object):
                "--delete",
                # print overall progress
                "--info=progress2",
+               # alter owner and group but chowning them to the local user.
+               "--owner",
+               "--group",
+               "--chown", "{user}:{user}".format(local_user)
+               # directories to work with
                from_path,
                to_path
                ]
         if relative:
             cmd.append("--relative")
-
-        dockerfile = """
-FROM instrumentisto/rsync-ssh
-RUN adduser 
-USER {user}:{user}
-        """.format(user=local_user).encode(encoding='UTF-8')
-
-        with BytesIO(dockerfile) as f:
-            image = self.client.images.build(fileobj=f,
-                                             tag="rsync_{}".format(local_user))
 
         logging.debug("Running rsync in docker with: " + " ".join(cmd))
         logging.debug("Volume mapping: " + str(volumes))
