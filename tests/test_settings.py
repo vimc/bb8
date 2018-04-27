@@ -29,8 +29,6 @@ json = """{
 
 
 def test_can_parse_settings():
-    with open('test.json', 'w') as f:
-        f.write(json)
     s = Settings('test.json')
     assert s.starport == {
         "addr": "the moon",
@@ -42,6 +40,11 @@ def test_can_parse_settings():
                                              TargetOptions(True, True, "root"))
     assert s.targets[1] == DirectoryTarget("target_2", "/some/path",
                                            TargetOptions(False, False, 123))
+
+
+def setup_module(module):
+    with open('test.json', 'w') as f:
+        f.write(json)
 
 
 def teardown_module(module):
