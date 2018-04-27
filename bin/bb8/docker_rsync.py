@@ -47,6 +47,7 @@ class DockerRsync(object):
 
         logging.debug("Running rsync in docker with: " + " ".join(cmd))
         logging.debug("Volume mapping: " + str(volumes))
+        logging.debug("Files will be owned by user id: " + str(local_user))
         container = self.client.containers.run("instrumentisto/rsync-ssh",
                                                command=cmd, volumes=volumes,
                                                detach=True, remove=True,
