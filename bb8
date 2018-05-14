@@ -5,7 +5,7 @@ container_name="bb8"
 
 if [[ ($# -gt 0) ]]; then
    if [ "$1" = "log" ] ; then
-    container_name="$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 32)"
+    container_name="bb8_$(cat /dev/urandom | tr -cd 'a-f0-9' | head -c 32)"
    fi
 fi
 
