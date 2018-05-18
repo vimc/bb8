@@ -1,3 +1,4 @@
+import json
 import sys
 from os.path import join
 
@@ -53,21 +54,25 @@ def last_modified_local(target, docker_client):
     return interpret_timestamp_output(output)
 
 
-def print_target_status(target, docker_client, settings):
+def get_target_status(target, docker_client, settings):
     starport = settings.starport
-    values = {
+    return {
         "target": target.name,
         "last_backup": get_last_backup(),
-        "modified_local": last_modified_local(target, docker_client),
-        "modified_remote": last_modified_remote(target, docker_client, starport)
+        "last_modified_local": last_modified_local(target, docker_client),
+        "last_modified_remote": last_modified_remote(target, docker_client,
+                                                     starport)
     }
+
+
+def print_target_status(data):
     template = """
 {target}
 ------------    
 Last backup:               {last_backup}
 Local copy last modified:  {modified_local}
 Remote copy last modified: {modified_remote}"""
-    print(template.format(**values), flush=True)
+    print(template.format(**data), flush=True)
 
 
 def print_status(args, settings_source=load_settings,
@@ -81,5 +86,9 @@ def print_status(args, settings_source=load_settings,
             print("Unknown targets specified: " + " ".join(remainder))
             sys.exit(-1)
 
-    for target in targets:
-        print_target_status(target, docker_client, settings)
+    statuses = (get_target_status(t, docker_client, settings) for t in targets)
+    if args["json"]:
+        print(json.dumps(statuses))
+    else:
+        for status in statuses:
+            print_target_status(status)
