@@ -3,6 +3,7 @@ from os.path import join
 
 import docker as docker
 from dateutil import parser
+from tzlocal import get_localzone
 
 from bb8.settings import load_settings
 
@@ -16,7 +17,7 @@ def interpret_timestamp_output(raw):
     if string:
         return parser.parse(string) \
             .replace(microsecond=0) \
-            .astimezone() \
+            .astimezone(get_localzone()) \
             .isoformat(" ")
     else:
         return "No files present"
