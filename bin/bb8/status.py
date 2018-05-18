@@ -70,8 +70,8 @@ def print_target_status(data):
 {target}
 ------------    
 Last backup:               {last_backup}
-Local copy last modified:  {modified_local}
-Remote copy last modified: {modified_remote}"""
+Local copy last modified:  {last_modified_local}
+Remote copy last modified: {last_modified_remote}"""
     print(template.format(**data), flush=True)
 
 
@@ -87,8 +87,8 @@ def print_status(args, settings_source=load_settings,
             sys.exit(-1)
 
     statuses = (get_target_status(t, docker_client, settings) for t in targets)
-    if args["json"]:
-        print(json.dumps(statuses))
+    if args["--json"]:
+        print(json.dumps(list(statuses), indent=4))
     else:
         for status in statuses:
             print_target_status(status)
