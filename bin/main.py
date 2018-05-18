@@ -5,7 +5,7 @@ Usage:
   bb8 backup
   bb8 restore
   bb8 init
-  bb8 status
+  bb8 status [TARGET...]
   bb8 log list [--limit=<number>]
   bb8 log show [VERSION]
 
