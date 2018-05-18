@@ -18,6 +18,10 @@ class DockerRsync(object):
         The local path will be mounted as a volume (using the volumes arg)
         and read from/written to as local_user. local_user can be a numeric
         UID or a username."""
+        
+        # Disable ssh compression:
+        # https://galaxysd.github.io/20160302/Fastest-Way-Rsync
+        ssh_cmd = "ssh -o Compression=no"
 
         cmd = ["rsync",
                # copy directories recursively
@@ -27,7 +31,7 @@ class DockerRsync(object):
                "-v",
                # specify remote shell program explicitly (i.e. ssh as opposed
                # to the default rsh)
-               "-e", "ssh",
+               "-e", ssh_cmd,
                # preserve permissions
                "--perms",
                # delete destination files not in source
