@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import logging
+import re
 from os import getuid, getgid
 from os.path import join
 
@@ -70,7 +71,7 @@ class DockerRsync(object):
     def _get_target_path(self, backup_location, name):
         template = "{backup_location}/{name}"
         dir = template.format(name=name, backup_location=backup_location)
-        return dir.replace("//", "/")
+        return re.sub("/+", "/", dir)
 
     def _get_remote_dir(self, host, target_path):
         return "{host}:{target_path}/data/".format(host=host,
