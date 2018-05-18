@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+import json
 import logging
 import re
+from datetime import datetime
 from os import getuid, getgid
 from os.path import join
 
 import docker
+from shellescape import quote
 
 from .logger import log_from_docker
 
@@ -16,6 +19,11 @@ class DockerRsync(object):
 
     def _run(self, **kwargs):
         return self.client.containers.run("instrumentisto/rsync-ssh", **kwargs)
+
+    def _run_via_ssh(self, host, remote_cmd):
+        return self._run(command=["ssh", host] + remote_cmd,
+                         volumes={"bb8_ssh": self._ssh_volume_bind},
+                         remove=True)
 
     def _run_rsync(self, volumes, from_path, to_path, relative):
         chown = "{}:{}".format(getuid(), getgid())
@@ -78,13 +86,20 @@ class DockerRsync(object):
                                                    target_path=target_path)
 
     def _make_remote_dir(self, host, path):
-        self._run(command=["ssh", host, "mkdir", "-p", path],
-                  volumes={"bb8_ssh": self._ssh_volume_bind},
-                  remove=True)
+        self._run_via_ssh(host, ["mkdir", "-p", path])
 
     def _create_target_dirs(self, host, target_path):
         self._make_remote_dir(host, join(target_path, "data"))
         self._make_remote_dir(host, join(target_path, "meta"))
+
+    def _write_metadata(self, host, path):
+        metadata = {
+            "last_backup": datetime.now().astimezone().isoformat()
+        }
+        metadata = json.dumps(metadata)
+        path = join(path, "meta", "metadata.json")
+        cmd = "echo {data} > {path}".format(data=quote(metadata), path=path)
+        self._run_via_ssh(host, [cmd])
 
     # local_volume can be an absolute path or a named volume
     def backup_volume(self, settings, name, local_volume):
@@ -97,6 +112,7 @@ class DockerRsync(object):
 
         self._create_target_dirs(host, target_path)
         self._run_rsync(volumes, local_volume, remote_dir, True)
+        self._write_metadata(host, target_path)
 
     def restore_volume(self, settings, name, local_volume):
         starport = settings.starport
