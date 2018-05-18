@@ -5,19 +5,19 @@ from os.path import join
 import docker as docker
 from dateutil import parser
 
-from bb8.settings import load_settings
+from .settings import load_settings
 
 
 def get_last_backup():
     return "??"
 
 
-def interpret_timestamp_output(raw):
+def interpret_timestamp_output(raw, timezone=None):
     string = raw.decode('utf-8').strip()
     if string:
         return parser.parse(string) \
             .replace(microsecond=0) \
-            .astimezone() \
+            .astimezone(timezone) \
             .isoformat(" ")
     else:
         return "No files present"
