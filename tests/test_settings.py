@@ -1,5 +1,4 @@
 import os
-import shutil
 
 from bin.bb8.settings import Settings
 from bin.bb8.targets import NamedVolumeTarget, TargetOptions, DirectoryTarget
@@ -22,7 +21,8 @@ json = """{
             "type": "directory",
             "path": "/some/path",
             "backup": false,
-            "restore": false
+            "restore": false,
+            "user": 123
         }
     ]
 }"""
@@ -37,9 +37,9 @@ def test_can_parse_settings():
         "backup_location": "houston"
     }
     assert s.targets[0] == NamedVolumeTarget("target_1", "volume_name",
-                                             TargetOptions(True, True))
+                                             TargetOptions(True, True, "root"))
     assert s.targets[1] == DirectoryTarget("target_2", "/some/path",
-                                           TargetOptions(False, False))
+                                           TargetOptions(False, False, 123))
 
 
 def setup_module(module):

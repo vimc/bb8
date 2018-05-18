@@ -8,10 +8,13 @@ class Dynamic(object):
         return str(self.label)
 
 
-def mock_target(id, backup=True, restore=True, **kwargs):
-    return Dynamic(id, id=id, mount_id="mount-{}".format(id),
+def mock_target(id, backup=True, restore=True, user='root', **kwargs):
+    options = Dynamic("opt", backup=backup, restore=restore, user=user)
+    return Dynamic(id,
+                   id=id,
+                   mount_id="mount-{}".format(id),
                    name="name-{}".format(id),
-                   options=Dynamic("opt", backup=backup, restore=restore),
+                   options=options,
                    **kwargs)
 
 
