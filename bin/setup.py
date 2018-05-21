@@ -31,7 +31,8 @@ def setup_targets():
     machine_targets = list(x for x in config["targets"] if x["name"] in desired_targets)
     machine_config = {
         'starport': config["starport"],
-        'targets': machine_targets
+        'targets': machine_targets,
+        'instance_guid': "456"
     }
     with open(config_path, 'w') as f:
         json.dump(machine_config, f, indent=4)
