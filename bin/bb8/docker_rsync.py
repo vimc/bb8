@@ -33,6 +33,8 @@ class DockerRsync(object):
                "--delete",
                # print overall progress
                "--info=progress2",
+               # preserve timestamps
+               "--times",
                from_path,
                to_path
                ]

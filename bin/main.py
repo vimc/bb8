@@ -5,6 +5,7 @@ Usage:
   bb8 backup
   bb8 restore
   bb8 init
+  bb8 status [TARGET...]
   bb8 log list [--limit=<number>]
   bb8 log show [VERSION]
 
@@ -21,6 +22,8 @@ from bb8.logger import with_logging
 from bb8.restore import run_restore
 from bb8.settings import ssh_key_path, known_hosts_path, root_path
 from docopt import docopt
+
+from bb8.status import print_status
 
 
 def init():
@@ -40,6 +43,8 @@ def run():
         with_logging(run_restore)
     elif args["init"]:
         with_logging(init)
+    elif args["status"]:
+        print_status(args)
     elif args["log"]:
         inspect_logs(args)
 
