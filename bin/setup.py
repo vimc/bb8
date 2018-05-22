@@ -5,6 +5,8 @@ Usage:
 """
 
 from docopt import docopt
+import string
+import random
 
 from bb8.settings import *
 
@@ -22,6 +24,10 @@ def check_user_input(config, desired_targets):
         exit(-2)
 
 
+def id_generator(size=7, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
 def setup_targets():
     args = docopt(__doc__)
     desired_targets = args["TARGET"]
@@ -29,10 +35,11 @@ def setup_targets():
         config = json.load(f)
     check_user_input(config, desired_targets)
     machine_targets = list(x for x in config["targets"] if x["name"] in desired_targets)
+    instance_guid=id_generator()
     machine_config = {
         'starport': config["starport"],
         'targets': machine_targets,
-        'instance_guid': "456"
+        'instance_guid': instance_guid
     }
     with open(config_path, 'w') as f:
         json.dump(machine_config, f, indent=4)
