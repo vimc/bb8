@@ -90,18 +90,18 @@ class DockerRsync(object):
         self._make_remote_dir(host, join(target_path, "data"))
         self._make_remote_dir(host, join(target_path, "meta"))
 
-    def _validate_id(self, host, target_path, instance_guid):
-        remote_id = self._run(command=["ssh", host, "less", join(target_path, "meta", "guid")],
+    def _validate_instance(self, host, name, target_path, instance_guid):
+        remote_id = self._run(command=["ssh", host, "less", target_path],
                               volumes={"bb8_ssh": self._ssh_volume_bind},
                               remove=True)
         if len(remote_id) == 0:
-            self._make_guid(host, target_path, instance_guid)
+            self._save_instance_guid(host, target_path, instance_guid)
         else:
             if remote_id != instance_guid:
-                raise Exception("This target has been backed up by a different instance of bb8: " + target_path)
+                raise Exception("This target has been backed up by a different instance of bb8: " + name)
 
-    def _make_guid(self, host, target_path, guid):
-        self._run(command=["ssh", host, "echo", guid, ">", join(target_path, "meta", "guid")],
+    def _save_instance_guid(self, host, target_path, guid):
+        self._run(command=["ssh", host, "echo", guid, ">", target_path],
                   volumes={"bb8_ssh": self._ssh_volume_bind},
                   remove=True)
 
@@ -115,7 +115,7 @@ class DockerRsync(object):
         remote_dir = self._get_remote_dir(host, target_path)
 
         self._create_target_dirs(host, target_path)
-        self._validate_id(host, target_path, settings.instance_guid)
+        self._validate_instance(host, name, join(target_path, "meta", "guid"), settings.instance_guid)
         self._run_rsync(volumes, local_volume, remote_dir, True)
 
     def restore_volume(self, settings, name, local_volume):

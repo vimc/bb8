@@ -21,10 +21,13 @@ mock_starport_settings = {
     "backup_location": "starport"
 }
 
+mock_instance_guid = "1234"
+
 
 def mock_settings(targets=None):
     targets = targets or []
     return Dynamic("settings",
+                   instance_guid=mock_instance_guid,
                    starport=mock_starport_settings,
                    targets=targets)
 
