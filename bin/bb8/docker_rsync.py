@@ -27,7 +27,8 @@ class DockerRsync(object):
                # specify remote shell program explicitly (i.e. ssh as opposed
                # to the default rsh)
                "-e", ssh_cmd,
-               "--perms", "--owner", "--group",
+               # preserve file permissions
+               "--perms",
                # delete destination files not in source
                "--delete",
                # print overall progress
