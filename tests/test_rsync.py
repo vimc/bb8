@@ -18,13 +18,15 @@ class TestDockerRsync(object):
     def test_backup_volume(self):
         # Setup
         sut = DockerRsync()
-        sut._run = MagicMock()
         sut._run_rsync = MagicMock()
         sut._make_remote_dir = MagicMock()
+        sut._write_metadata = MagicMock()
         sut._get_volume_args = MagicMock(wraps=sut._get_volume_args)
 
         # Test
-        sut.backup_volume("local", mock_remote_paths())
+        metadata = {"a": 5}
+        remote_paths = mock_remote_paths()
+        sut.backup_volume("local", metadata, remote_paths)
 
         # Check
         sut._run_rsync.assert_called_once_with(
@@ -34,6 +36,7 @@ class TestDockerRsync(object):
             call("host", "some/path/datadata/"),
             call("host", "some/path/metadata/"),
         ])
+        sut._write_metadata.assert_called_once_with(metadata, remote_paths)
 
     def test_restore_volume(self):
         # Setup

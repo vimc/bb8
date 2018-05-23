@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import json
 import logging
-from datetime import datetime
 from os import getuid, getgid
 from os.path import join
 
@@ -80,17 +79,14 @@ class DockerRsync(object):
         self._make_remote_dir(paths.host, paths.data())
         self._make_remote_dir(paths.host, paths.meta())
 
-    def _write_metadata(self, paths: RemotePaths):
-        metadata = {
-            "last_backup": datetime.now().astimezone().isoformat()
-        }
+    def _write_metadata(self, metadata, paths: RemotePaths):
         metadata = json.dumps(metadata)
         path = join(paths.meta(), "metadata.json")
         cmd = "echo {data} > {path}".format(data=quote(metadata), path=path)
         self._run_via_ssh(paths.host, [cmd])
 
     # local_volume can be an absolute path or a named volume
-    def backup_volume(self, local_volume, remote_paths: RemotePaths):
+    def backup_volume(self, local_volume, metadata, remote_paths: RemotePaths):
         volumes = self._get_volume_args(local_volume, "ro")
 
         self._create_target_dirs(remote_paths)
@@ -98,7 +94,7 @@ class DockerRsync(object):
                         local_volume,
                         remote_paths.data(include_host=True),
                         relative=True)
-        self._write_metadata(remote_paths)
+        self._write_metadata(metadata, remote_paths)
 
     def restore_volume(self, local_volume, remote_paths: RemotePaths):
         mounted_volume = join("/", local_volume)

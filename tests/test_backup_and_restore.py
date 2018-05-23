@@ -1,7 +1,8 @@
+from datetime import datetime
 from unittest.mock import MagicMock, call, ANY
 
 from bin.bb8.restore import run_restore
-from bin.bb8.backup import run_backup
+from bin.bb8.backup import run_backup, make_metadata
 from tests.mocks import mock_target, mock_settings, Dynamic
 
 
@@ -20,8 +21,8 @@ def test_backup_is_only_called_for_targets_with_backup_set_to_true():
 
     # Check
     rsync.backup_volume.assert_has_calls([
-        call("mount-a", ANY),
-        call("mount-c", ANY),
+        call("mount-a", ANY, ANY),
+        call("mount-c", ANY, ANY),
     ])
 
 
@@ -46,3 +47,11 @@ def test_restore_is_only_called_for_targets_with_restore_set_to_true():
     assert targets[0].before_restore.call_count == 1
     assert targets[1].before_restore.call_count == 0
     assert targets[2].before_restore.call_count == 1
+
+
+def metadata_includes_current_time():
+    before = datetime.now()
+    meta = make_metadata()
+    last_backup = meta["last_backup"]
+    after = datetime.now()
+    assert before <= last_backup <= after

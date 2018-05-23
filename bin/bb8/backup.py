@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from datetime import datetime
 import logging
 
 import docker
@@ -22,7 +23,13 @@ def run_backup(settings_source=load_settings, rsync=DockerRsync()):
         logging.info("- " + target.id)
         if target.options.backup:
             paths = RemotePaths(target.name, starport)
-            rsync.backup_volume(target.mount_id, paths)
+            rsync.backup_volume(target.mount_id, make_metadata(), paths)
         else:
             template = "  (Skipping backing up {} - backup is false in config)"
             logging.info(template.format(target.name))
+
+
+def make_metadata():
+    return {
+        "last_backup": datetime.now().astimezone().isoformat()
+    }
