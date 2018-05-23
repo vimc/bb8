@@ -16,9 +16,9 @@ def mock_target(id, backup=True, restore=True, **kwargs):
 
 
 mock_starport_settings = {
-    "user": "clark",
-    "addr": "metropolis",
-    "backup_location": "daily_planet"
+    "user": "jean",
+    "addr": "paris",
+    "backup_location": "starport"
 }
 
 

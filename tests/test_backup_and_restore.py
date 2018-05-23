@@ -20,8 +20,8 @@ def test_backup_is_only_called_for_targets_with_backup_set_to_true():
 
     # Check
     rsync.backup_volume.assert_has_calls([
-        call(settings, "mount-a"),
-        call(settings, "mount-c"),
+        call(settings, "name-a", "mount-a"),
+        call(settings, "name-c", "mount-c"),
     ])
 
 
@@ -40,8 +40,8 @@ def test_restore_is_only_called_for_targets_with_restore_set_to_true():
 
     # Check
     rsync.restore_volume.assert_has_calls([
-        call(settings, "mount-a"),
-        call(settings, "mount-c"),
+        call(settings, "name-a", "mount-a"),
+        call(settings, "name-c", "mount-c"),
     ])
     assert targets[0].before_restore.call_count == 1
     assert targets[1].before_restore.call_count == 0
