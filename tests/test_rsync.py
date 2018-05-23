@@ -1,8 +1,7 @@
 from unittest.mock import MagicMock, ANY, call
 
 from bin.bb8.docker_rsync import DockerRsync
-from tests.mocks import mock_starport_settings, mock_settings, Dynamic, \
-    mock_remote_paths
+from tests.mocks import mock_remote_paths
 
 
 # noinspection PyProtectedMember,PyMethodMayBeStatic,PyTypeChecker

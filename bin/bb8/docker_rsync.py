@@ -89,11 +89,11 @@ class DockerRsync(object):
     def backup_volume(self, local_volume, metadata, remote_paths: RemotePaths):
         volumes = self._get_volume_args(local_volume, "ro")
 
+        remote_path = remote_paths.data(include_host=True)
+        logging.info("Backing up to {} from {}".format(remote_path,
+                                                       local_volume))
         self._create_target_dirs(remote_paths)
-        self._run_rsync(volumes,
-                        local_volume,
-                        remote_paths.data(include_host=True),
-                        relative=True)
+        self._run_rsync(volumes, local_volume, remote_path, relative=True)
         self._write_metadata(metadata, remote_paths)
 
     def restore_volume(self, local_volume, remote_paths: RemotePaths):
@@ -105,7 +105,4 @@ class DockerRsync(object):
 
         logging.info("Restoring from {} to {}".format(remote_path,
                                                       local_volume))
-        self._run_rsync(volumes,
-                        remote_path,
-                        mounted_volume,
-                        relative=False)
+        self._run_rsync(volumes, remote_path, mounted_volume, relative=False)

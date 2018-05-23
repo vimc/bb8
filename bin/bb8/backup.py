@@ -3,6 +3,7 @@ from datetime import datetime
 import logging
 
 import docker
+from tzlocal import get_localzone
 
 from .remote_paths import RemotePaths
 from .docker_rsync import DockerRsync
@@ -31,5 +32,5 @@ def run_backup(settings_source=load_settings, rsync=DockerRsync()):
 
 def make_metadata():
     return {
-        "last_backup": datetime.now().astimezone().isoformat()
+        "last_backup": datetime.now().astimezone(get_localzone()).isoformat()
     }
