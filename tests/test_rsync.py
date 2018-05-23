@@ -17,7 +17,7 @@ class TestDockerRsync(unittest.TestCase):
 
     def test_get_remote_dir(self):
         sut = DockerRsync()
-        dir = sut._get_remote_dir("jean@paris", "target")
+        dir = sut._get_remote_data_dir("jean@paris", "target")
         assert dir == "jean@paris:target/data/"
 
     def test_get_host(self):
