@@ -29,3 +29,20 @@ def mock_settings(targets=None):
                    targets=targets)
 
 
+def mock_remote_paths():
+    def data(include_host=False):
+        p = "some/path/datadata/"
+        if include_host:
+            p = "server:" + p
+        return p
+
+    def meta(include_host=False):
+        p = "some/path/metadata/"
+        if include_host:
+            p = "server:" + p
+        return p
+
+    return Dynamic("remote_paths",
+                    host="host",
+                    data=data,
+                    meta=meta)

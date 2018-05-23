@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import logging
 
+from .remote_paths import RemotePaths
 from .docker_rsync import DockerRsync
 from .settings import load_settings, log_dir
 
@@ -18,7 +19,8 @@ def run_restore(settings_source=load_settings, rsync=DockerRsync()):
         logging.info("- " + target.id)
         if target.options.restore:
             target.before_restore()
-            rsync.restore_volume(settings, target.name, target.mount_id)
+            paths = RemotePaths(target.name, starport)
+            rsync.restore_volume(target.mount_id, paths)
         else:
             template = "  (Skipping restoring {} - restore is false in config)"
             logging.info(template.format(target.name))

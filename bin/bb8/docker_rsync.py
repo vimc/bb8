@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import json
 import logging
-import re
 from datetime import datetime
 from os import getuid, getgid
 from os.path import join
@@ -10,6 +9,7 @@ import docker
 from shellescape import quote
 
 from .logger import log_from_docker
+from .remote_paths import RemotePaths
 
 
 class DockerRsync(object):
@@ -73,57 +73,43 @@ class DockerRsync(object):
             local_volume: {"bind": mounted_volume, "mode": volume_mode}
         }
 
-    def _get_host(self, starport):
-        return "{user}@{addr}".format(**starport)
-
-    def _get_target_path(self, backup_location, name):
-        template = "{backup_location}/{name}"
-        dir = template.format(name=name, backup_location=backup_location)
-        return re.sub("/+", "/", dir)
-
-    def _get_remote_data_dir(self, host, target_path):
-        return "{host}:{target_path}/data/".format(host=host,
-                                                   target_path=target_path)
-
     def _make_remote_dir(self, host, path):
         self._run_via_ssh(host, ["mkdir", "-p", path])
 
-    def _create_target_dirs(self, host, target_path):
-        self._make_remote_dir(host, join(target_path, "data"))
-        self._make_remote_dir(host, join(target_path, "meta"))
+    def _create_target_dirs(self, paths: RemotePaths):
+        self._make_remote_dir(paths.host, paths.data())
+        self._make_remote_dir(paths.host, paths.meta())
 
-    def _write_metadata(self, host, path):
+    def _write_metadata(self, paths: RemotePaths):
         metadata = {
             "last_backup": datetime.now().astimezone().isoformat()
         }
         metadata = json.dumps(metadata)
-        path = join(path, "meta", "metadata.json")
+        path = join(paths.meta(), "metadata.json")
         cmd = "echo {data} > {path}".format(data=quote(metadata), path=path)
-        self._run_via_ssh(host, [cmd])
+        self._run_via_ssh(paths.host, [cmd])
 
     # local_volume can be an absolute path or a named volume
-    def backup_volume(self, settings, name, local_volume):
-        starport = settings.starport
+    def backup_volume(self, local_volume, remote_paths: RemotePaths):
         volumes = self._get_volume_args(local_volume, "ro")
 
-        host = self._get_host(starport)
-        target_path = self._get_target_path(starport["backup_location"], name)
-        remote_dir = self._get_remote_data_dir(host, target_path)
+        self._create_target_dirs(remote_paths)
+        self._run_rsync(volumes,
+                        local_volume,
+                        remote_paths.data(include_host=True),
+                        relative=True)
+        self._write_metadata(remote_paths)
 
-        self._create_target_dirs(host, target_path)
-        self._run_rsync(volumes, local_volume, remote_dir, True)
-        self._write_metadata(host, target_path)
-
-    def restore_volume(self, settings, name, local_volume):
-        starport = settings.starport
+    def restore_volume(self, local_volume, remote_paths: RemotePaths):
         mounted_volume = join("/", local_volume)
         volumes = self._get_volume_args(local_volume, "rw")
 
-        host = self._get_host(starport)
-        target_path = self._get_target_path(starport["backup_location"], name)
-        remote_dir = self._get_remote_data_dir(host, target_path)
-        remote_path = "{}{}/".format(remote_dir, local_volume)
+        remote_path = "{}{}/".format(remote_paths.data(include_host=True),
+                                     local_volume)
 
-        logging.info(
-            "Restoring from {} to {}".format(remote_path, local_volume))
-        self._run_rsync(volumes, remote_path, mounted_volume, False)
+        logging.info("Restoring from {} to {}".format(remote_path,
+                                                      local_volume))
+        self._run_rsync(volumes,
+                        remote_path,
+                        mounted_volume,
+                        relative=False)

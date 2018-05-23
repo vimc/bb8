@@ -3,6 +3,7 @@ import logging
 
 import docker
 
+from .remote_paths import RemotePaths
 from .docker_rsync import DockerRsync
 from .settings import load_settings, log_dir
 
@@ -20,7 +21,8 @@ def run_backup(settings_source=load_settings, rsync=DockerRsync()):
     for target in targets:
         logging.info("- " + target.id)
         if target.options.backup:
-            rsync.backup_volume(settings, target.name, target.mount_id)
+            paths = RemotePaths(target.name, starport)
+            rsync.backup_volume(target.mount_id, paths)
         else:
             template = "  (Skipping backing up {} - backup is false in config)"
             logging.info(template.format(target.name))
