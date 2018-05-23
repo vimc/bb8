@@ -72,36 +72,19 @@ class DockerRsync(object):
             local_volume: {"bind": mounted_volume, "mode": volume_mode}
         }
 
-    def _make_remote_dir(self, host, path):
-        self._run_via_ssh(host, ["mkdir", "-p", path])
-
-    def _create_target_dirs(self, paths: RemotePaths):
-        self._make_remote_dir(paths.host, paths.data())
-        self._make_remote_dir(paths.host, paths.meta())
-
-    def _write_metadata(self, metadata, paths: RemotePaths):
-        metadata = json.dumps(metadata)
-        path = join(paths.meta(), "metadata.json")
-        cmd = "echo {data} > {path}".format(data=quote(metadata), path=path)
-        self._run_via_ssh(paths.host, [cmd])
-
     # local_volume can be an absolute path or a named volume
-    def backup_volume(self, local_volume, metadata, remote_paths: RemotePaths):
+    def backup_volume(self, local_volume, remote_path):
         volumes = self._get_volume_args(local_volume, "ro")
 
-        remote_path = remote_paths.data(include_host=True)
         logging.info("Backing up to {} from {}".format(remote_path,
                                                        local_volume))
-        self._create_target_dirs(remote_paths)
         self._run_rsync(volumes, local_volume, remote_path, relative=True)
-        self._write_metadata(metadata, remote_paths)
 
-    def restore_volume(self, local_volume, remote_paths: RemotePaths):
+    def restore_volume(self, local_volume, remote_path):
         mounted_volume = join("/", local_volume)
         volumes = self._get_volume_args(local_volume, "rw")
 
-        remote_path = "{}{}/".format(remote_paths.data(include_host=True),
-                                     local_volume)
+        remote_path = "{}{}/".format(remote_path, local_volume)
 
         logging.info("Restoring from {} to {}".format(remote_path,
                                                       local_volume))

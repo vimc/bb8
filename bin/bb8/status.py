@@ -1,31 +1,21 @@
 import json
 import sys
-from os.path import join
 
 import docker as docker
 from dateutil import parser
 from tzlocal import get_localzone
 
+from .remote_file_manager import RemoteFileManager
 from .remote_paths import RemotePaths
 from .settings import load_settings
 
 
-def _run_remote_cmd(remote_cmd: str, docker_client, paths: RemotePaths):
-    cmd = ["ssh", paths.host, remote_cmd]
-    volumes = {
-        "bb8_ssh": {"bind": "/root/.ssh", "mode": "ro"}
-    }
-    return docker_client.containers.run("instrumentisto/rsync-ssh",
-                                        command=cmd,
-                                        volumes=volumes,
-                                        remove=True)
-
-
-def get_last_backup(paths: RemotePaths, docker_client):
-    remote_cmd = "cat {}".format(join(paths.meta(), "metadata.json"))
-    output = _run_remote_cmd(remote_cmd,  docker_client, paths)
-    metadata = json.loads(output)
-    return normalize_timestamp(metadata["last_backup"])
+def get_last_backup(fm: RemoteFileManager):
+    metadata = fm.get_metadata()
+    if metadata:
+        return normalize_timestamp(metadata["last_backup"])
+    else:
+        return "Never backed up"
 
 
 def interpret_timestamp_output(raw, timezone=None):
@@ -44,13 +34,13 @@ def normalize_timestamp(string, timezone=None):
         .isoformat(" ")
 
 
-def last_modified_remote(paths: RemotePaths, docker_client):
+def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
     remote_cmd = 'find -L {} -type f -print0'.format(paths.data()) + \
                  ' | xargs -0 stat --format "%Y :%y"' \
                  ' | sort -nr' \
                  ' | cut -d: -f2-' \
                  ' | head -n 1'
-    output = _run_remote_cmd(remote_cmd, docker_client, paths)
+    output = fm.run_remote_cmd(remote_cmd)
     return interpret_timestamp_output(output)
 
 
@@ -70,11 +60,12 @@ def last_modified_local(target, docker_client):
 def get_target_status(target, docker_client, settings):
     starport = settings.starport
     paths = RemotePaths(target.name, starport)
+    fm = RemoteFileManager(paths, docker_client)
     return {
         "target": target.name,
-        "last_backup": get_last_backup(paths, docker_client),
+        "last_backup": get_last_backup(fm),
         "last_modified_local": last_modified_local(target, docker_client),
-        "last_modified_remote": last_modified_remote(paths, docker_client)
+        "last_modified_remote": last_modified_remote(fm, paths)
     }
 
 

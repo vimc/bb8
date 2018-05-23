@@ -1,4 +1,5 @@
 import re
+from os.path import join
 
 
 class RemotePaths(object):
@@ -12,6 +13,12 @@ class RemotePaths(object):
 
     def meta(self, include_host=False):
         return self.get_path("meta", include_host=include_host)
+
+    def metadata_file(self, include_host=False):
+        return join(self.meta(include_host=include_host), "metadata.json")
+
+    def rsync_path(self):
+        return self.data(include_host=True)
 
     def get_path(self, directory, include_host=False):
         path = "{bucket}/{directory}/".format(bucket=self.remote_bucket_path,

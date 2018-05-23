@@ -5,6 +5,7 @@ import logging
 import docker
 from tzlocal import get_localzone
 
+from .remote_file_manager import RemoteFileManager
 from .remote_paths import RemotePaths
 from .docker_rsync import DockerRsync
 from .settings import load_settings, log_dir
@@ -23,11 +24,17 @@ def run_backup(settings_source=load_settings, rsync=DockerRsync()):
     for target in targets:
         logging.info("- " + target.id)
         if target.options.backup:
-            paths = RemotePaths(target.name, starport)
-            rsync.backup_volume(target.mount_id, make_metadata(), paths)
+            fm = RemoteFileManager(RemotePaths(target.name, starport))
+            backup_target(target, fm, rsync)
         else:
             template = "  (Skipping backing up {} - backup is false in config)"
             logging.info(template.format(target.name))
+
+
+def backup_target(target, fm: RemoteFileManager, rsync: DockerRsync):
+    fm.create_directories()
+    rsync.backup_volume(target.mount_id, fm.paths.rsync_path())
+    fm.write_metadata(make_metadata())
 
 
 def make_metadata():
