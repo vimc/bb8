@@ -77,10 +77,6 @@ class DockerRsync(object):
         return "{host}:{target_path}/data/".format(host=host,
                                                    target_path=target_path)
 
-    def _get_remote_meta_dir(self, host, target_path):
-        return "{host}:{target_path}/meta/".format(host=host,
-                                                   target_path=target_path)
-
     def _make_remote_dir(self, host, path):
         self._run(command=["ssh", host, "mkdir", "-p", path],
                   volumes={"bb8_ssh": self._ssh_volume_bind},
