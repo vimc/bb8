@@ -6,40 +6,51 @@ import docker as docker
 from dateutil import parser
 from tzlocal import get_localzone
 
+from .remote_paths import RemotePaths
 from .settings import load_settings
 
 
-def get_last_backup():
-    return "??"
+def _run_remote_cmd(remote_cmd: str, docker_client, paths: RemotePaths):
+    cmd = ["ssh", paths.host, remote_cmd]
+    volumes = {
+        "bb8_ssh": {"bind": "/root/.ssh", "mode": "ro"}
+    }
+    return docker_client.containers.run("instrumentisto/rsync-ssh",
+                                        command=cmd,
+                                        volumes=volumes,
+                                        remove=True)
+
+
+def get_last_backup(paths: RemotePaths, docker_client):
+    remote_cmd = "cat {}".format(join(paths.meta(), "metadata.json"))
+    output = _run_remote_cmd(remote_cmd,  docker_client, paths)
+    metadata = json.loads(output)
+    return normalize_timestamp(metadata["last_backup"])
 
 
 def interpret_timestamp_output(raw, timezone=None):
     string = raw.decode('utf-8').strip()
     if string:
-        timezone = timezone or get_localzone()
-        return parser.parse(string) \
-            .replace(microsecond=0) \
-            .astimezone(timezone) \
-            .isoformat(" ")
+        return normalize_timestamp(string, timezone)
     else:
         return "No files present"
 
 
-def last_modified_remote(target, docker_client, starport):
-    remote_path = join(starport["backup_location"], target.mount_id.strip('/'))
-    remote_cmd = 'find -L {} -type f -print0'.format(remote_path) + \
+def normalize_timestamp(string, timezone=None):
+    timezone = timezone or get_localzone()
+    return parser.parse(string) \
+        .replace(microsecond=0) \
+        .astimezone(timezone) \
+        .isoformat(" ")
+
+
+def last_modified_remote(paths: RemotePaths, docker_client):
+    remote_cmd = 'find -L {} -type f -print0'.format(paths.data()) + \
                  ' | xargs -0 stat --format "%Y :%y"' \
                  ' | sort -nr' \
                  ' | cut -d: -f2-' \
                  ' | head -n 1'
-    cmd = ["ssh", "{user}@{addr}".format(**starport), remote_cmd]
-    volumes = {
-        "bb8_ssh": {"bind": "/root/.ssh", "mode": "ro"}
-    }
-    output = docker_client.containers.run("instrumentisto/rsync-ssh",
-                                          command=cmd,
-                                          volumes=volumes,
-                                          remove=True)
+    output = _run_remote_cmd(remote_cmd, docker_client, paths)
     return interpret_timestamp_output(output)
 
 
@@ -58,12 +69,12 @@ def last_modified_local(target, docker_client):
 
 def get_target_status(target, docker_client, settings):
     starport = settings.starport
+    paths = RemotePaths(target.name, starport)
     return {
         "target": target.name,
-        "last_backup": get_last_backup(),
+        "last_backup": get_last_backup(paths, docker_client),
         "last_modified_local": last_modified_local(target, docker_client),
-        "last_modified_remote": last_modified_remote(target, docker_client,
-                                                     starport)
+        "last_modified_remote": last_modified_remote(paths, docker_client)
     }
 
 
