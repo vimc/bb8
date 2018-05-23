@@ -81,7 +81,7 @@ class DockerRsync(object):
         dir = template.format(name=name, backup_location=backup_location)
         return re.sub("/+", "/", dir)
 
-    def _get_remote_dir(self, host, target_path):
+    def _get_remote_data_dir(self, host, target_path):
         return "{host}:{target_path}/data/".format(host=host,
                                                    target_path=target_path)
 
@@ -108,7 +108,7 @@ class DockerRsync(object):
 
         host = self._get_host(starport)
         target_path = self._get_target_path(starport["backup_location"], name)
-        remote_dir = self._get_remote_dir(host, target_path)
+        remote_dir = self._get_remote_data_dir(host, target_path)
 
         self._create_target_dirs(host, target_path)
         self._run_rsync(volumes, local_volume, remote_dir, True)
@@ -121,7 +121,7 @@ class DockerRsync(object):
 
         host = self._get_host(starport)
         target_path = self._get_target_path(starport["backup_location"], name)
-        remote_dir = self._get_remote_dir(host, target_path)
+        remote_dir = self._get_remote_data_dir(host, target_path)
         remote_path = "{}{}/".format(remote_dir, local_volume)
 
         logging.info(
