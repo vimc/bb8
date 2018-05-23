@@ -26,3 +26,12 @@ class TestRemotePaths(object):
         sut = RemotePaths("target", mock_starport_settings)
         meta_path = sut.meta(include_host=True)
         assert meta_path == "jean@paris:starport/target/meta/"
+
+    def test_get_metadata_file(self):
+        sut = RemotePaths("target", mock_starport_settings)
+        metadata_file = sut.metadata_file(include_host=True)
+        assert metadata_file == "jean@paris:starport/target/meta/metadata.json"
+
+    def test_rsync_path_is_data_path_with_host(self):
+        sut = RemotePaths("target", mock_starport_settings)
+        assert sut.rsync_path() == sut.data(include_host=True)

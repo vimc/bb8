@@ -3,7 +3,7 @@ import json
 import docker
 from shellescape import quote
 
-from bb8.remote_paths import RemotePaths
+from .remote_paths import RemotePaths
 
 
 class RemoteFileManager(object):
@@ -42,3 +42,6 @@ class RemoteFileManager(object):
     def create_directories(self):
         self._make_remote_dir(self.paths.data())
         self._make_remote_dir(self.paths.meta())
+
+    def get_rsync_path(self):
+        return self.paths.rsync_path()

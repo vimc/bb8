@@ -1,28 +1,16 @@
 #!/usr/bin/env python3
-import json
 import logging
 from os import getuid, getgid
 from os.path import join
 
 import docker
-from shellescape import quote
 
 from .logger import log_from_docker
-from .remote_paths import RemotePaths
 
 
 class DockerRsync(object):
     def __init__(self, client=docker.from_env()):
         self.client = client
-        self._ssh_volume_bind = {"bind": "/root/.ssh", "mode": "ro"}
-
-    def _run(self, **kwargs):
-        return self.client.containers.run("instrumentisto/rsync-ssh", **kwargs)
-
-    def _run_via_ssh(self, host, remote_cmd):
-        return self._run(command=["ssh", host] + remote_cmd,
-                         volumes={"bb8_ssh": self._ssh_volume_bind},
-                         remove=True)
 
     def _run_rsync(self, volumes, from_path, to_path, relative):
         chown = "{}:{}".format(getuid(), getgid())
@@ -55,8 +43,9 @@ class DockerRsync(object):
 
         logging.debug("Running rsync in docker with: " + " ".join(cmd))
         logging.debug("Volume mapping: " + str(volumes))
-        container = self._run(command=cmd, volumes=volumes,
-                              detach=True, remove=True)
+        container = self.client.containers.run("instrumentisto/rsync-ssh",
+                                               command=cmd, volumes=volumes,
+                                               detach=True, remove=True)
 
         try:
             log_from_docker(container)
@@ -68,7 +57,7 @@ class DockerRsync(object):
     def _get_volume_args(self, local_volume, volume_mode):
         mounted_volume = join("/", local_volume)
         return {
-            "bb8_ssh": self._ssh_volume_bind,
+            "bb8_ssh": {"bind": "/root/.ssh", "mode": "ro"},
             local_volume: {"bind": mounted_volume, "mode": volume_mode}
         }
 
