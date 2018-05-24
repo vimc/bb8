@@ -10,11 +10,11 @@ class RemotePaths(object):
 
     @property
     def data(self):
-        return self.get_path("data")
+        return self._get_path("data")
 
     @property
     def meta(self):
-        return self.get_path("meta")
+        return self._get_path("meta")
 
     @property
     def metadata_file(self):
@@ -24,7 +24,7 @@ class RemotePaths(object):
     def rsync_path(self):
         return "{host}:{path}".format(host=self.host, path=self.data)
 
-    def get_path(self, directory):
+    def _get_path(self, directory):
         return "{bucket}/{directory}/".format(bucket=self.remote_bucket_path,
                                               directory=directory)
 

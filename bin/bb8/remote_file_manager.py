@@ -22,7 +22,9 @@ class RemoteFileManager(object):
                                                  remove=True)
 
     def get_metadata(self):
-        remote_cmd = 'cat {path} || :'.format(path=self.paths.metadata_file)
+        # The '|| true' makes the command exit with status 0 and return the
+        # empty string if the file doesn't exist
+        remote_cmd = 'cat {path} || true'.format(path=self.paths.metadata_file)
         output = self.run_remote_cmd(remote_cmd)
         if output:
             return json.loads(output)
