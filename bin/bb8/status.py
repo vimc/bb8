@@ -1,5 +1,6 @@
 import json
 import sys
+from datetime import datetime
 
 import docker as docker
 from dateutil import parser
@@ -15,7 +16,7 @@ def get_last_backup(fm: RemoteFileManager):
     if metadata:
         return normalize_timestamp(metadata["last_backup"])
     else:
-        return "Never backed up"
+        return None
 
 
 def interpret_timestamp_output(raw, timezone=None):
@@ -23,15 +24,14 @@ def interpret_timestamp_output(raw, timezone=None):
     if string:
         return normalize_timestamp(string, timezone)
     else:
-        return "No files present"
+        return None
 
 
 def normalize_timestamp(string, timezone=None):
     timezone = timezone or get_localzone()
     return parser.parse(string) \
         .replace(microsecond=0) \
-        .astimezone(timezone) \
-        .isoformat(" ")
+        .astimezone(timezone)
 
 
 def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
@@ -45,6 +45,9 @@ def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
 
 
 def last_modified_local(target, docker_client):
+    if target.mount_id not in [v.id for v in docker_client.volumes.list()]:
+        return None
+
     cmd = 'find -L /data -type f -o -type d -print0' \
           ' | xargs -0 stat -c "%y"' \
           ' | sort -nr' \
@@ -70,13 +73,39 @@ def get_target_status(target, docker_client, settings):
 
 
 def print_target_status(data):
+    last_backup = data["last_backup"]
+    mod_local = data["last_modified_local"]
+    mod_remote = data["last_modified_remote"]
+
     template = """
 {target}
 ------------    
 Last backup:               {last_backup}
 Local copy last modified:  {last_modified_local}
 Remote copy last modified: {last_modified_remote}"""
-    print(template.format(**data), flush=True)
+
+    formatted = template.format(
+        target=data["target"],
+        last_backup=last_backup or "Never backed up",
+        last_modified_local=mod_local or "No files present",
+        last_modified_remote=mod_remote or "No files present"
+    )
+    print(formatted, flush=True)
+
+    if mod_local and (not last_backup or mod_local > last_backup):
+        print("Warning: Data has been modified since last backup. "
+              "Consider running bb8 backup.")
+    if mod_remote and (not mod_local or mod_remote > mod_local):
+        print("Warning: Remote data has been modified since last restore. "
+              "Consider running bb8 restore.")
+
+
+def serialize_date(obj):
+    # Note that we return dates in JSON as UTC whereas when printing them out in
+    # a human-friendly way we use the user's timezone.
+    if isinstance(obj, datetime):
+        return obj.astimezone().isoformat(" ")
+    raise TypeError("Type %s not serializable" % type(obj))
 
 
 def print_status(args, settings_source=load_settings,
@@ -92,7 +121,9 @@ def print_status(args, settings_source=load_settings,
 
     statuses = (get_target_status(t, docker_client, settings) for t in targets)
     if args["--json"]:
-        print(json.dumps(list(statuses), indent=4))
+        print(json.dumps(list(statuses),
+                         indent=4,
+                         default=serialize_date))
     else:
         for status in statuses:
             print_target_status(status)
