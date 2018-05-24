@@ -22,8 +22,7 @@ class RemoteFileManager(object):
                                                  remove=True)
 
     def get_metadata(self):
-        remote_cmd = 'cat {p} || :'.format(
-            p=self.paths.metadata_file())
+        remote_cmd = 'cat {path} || :'.format(path=self.paths.metadata_file)
         output = self.run_remote_cmd(remote_cmd)
         if output:
             return json.loads(output)
@@ -32,7 +31,7 @@ class RemoteFileManager(object):
 
     def write_metadata(self, metadata):
         json_content = json.dumps(metadata)
-        path = self.paths.metadata_file()
+        path = self.paths.metadata_file
         cmd = "echo {data} > {path}".format(data=quote(json_content), path=path)
         self.run_remote_cmd(cmd)
 
@@ -40,8 +39,8 @@ class RemoteFileManager(object):
         self.run_remote_cmd("mkdir -p {}".format(path))
 
     def create_directories(self):
-        self._make_remote_dir(self.paths.data())
-        self._make_remote_dir(self.paths.meta())
+        self._make_remote_dir(self.paths.data)
+        self._make_remote_dir(self.paths.meta)
 
     def get_rsync_path(self):
-        return self.paths.rsync_path()
+        return self.paths.rsync_path

@@ -4,10 +4,11 @@ from bin.bb8.remote_file_manager import RemoteFileManager
 from tests.mocks import Dynamic
 
 
+# noinspection PyTypeChecker
 class TestRemoteFileManager(object):
     def test_get_metadata_when_no_metadata_exists(self):
         # Setup
-        paths = Dynamic("paths", metadata_file=lambda: "/some/path")
+        paths = Dynamic("paths", metadata_file="/some/path")
         sut = RemoteFileManager(paths)
         sut.run_remote_cmd = lambda x: ""
 
@@ -16,7 +17,7 @@ class TestRemoteFileManager(object):
 
     def test_get_metadata_when_metadata_exists(self):
         # Setup
-        paths = Dynamic("paths", metadata_file=lambda: "/some/path")
+        paths = Dynamic("paths", metadata_file="/some/path")
         sut = RemoteFileManager(paths)
         sut.run_remote_cmd = lambda x: '{ "test": "value" }'
 
@@ -26,7 +27,7 @@ class TestRemoteFileManager(object):
     def test_write_metadata(self):
         # Setup
         paths = Dynamic("paths")
-        paths.metadata_file = lambda: "/some/file.json"
+        paths.metadata_file = "/some/file.json"
         sut = RemoteFileManager(paths)
         sut.run_remote_cmd = MagicMock()
 
@@ -41,8 +42,8 @@ class TestRemoteFileManager(object):
     def test_create_directories(self):
         # Setup
         paths = Dynamic("paths")
-        paths.data = lambda: "/path/to/data/"
-        paths.meta = lambda: "/path/to/meta/"
+        paths.data = "/path/to/data/"
+        paths.meta = "/path/to/meta/"
         sut = RemoteFileManager(paths)
         sut._make_remote_dir = MagicMock()
 
@@ -56,6 +57,6 @@ class TestRemoteFileManager(object):
         ])
 
     def test_get_rsync_path_calls_through(self):
-        paths = Dynamic("paths", rsync_path=lambda: "/some/path")
+        paths = Dynamic("paths", rsync_path="/some/path")
         sut = RemoteFileManager(paths)
         assert sut.get_rsync_path() == "/some/path"
