@@ -1,12 +1,11 @@
 from unittest.mock import MagicMock, ANY, call
-import unittest
 
 from bin.bb8.docker_rsync import DockerRsync
-from tests.mocks import mock_starport_settings, mock_settings, mock_instance_guid, mock_remote_paths
+from tests.mocks import mock_remote_paths
 
 
 # noinspection PyProtectedMember,PyMethodMayBeStatic,PyTypeChecker
-class TestDockerRsync(unittest.TestCase):
+class TestDockerRsync(object):
     def test_get_volume_args(self):
         sut = DockerRsync()
         args = sut._get_volume_args("local", "some-mode")
