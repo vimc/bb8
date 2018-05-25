@@ -24,13 +24,12 @@ class RestoreTask(object):
             logging.info("- " + target.id)
             if target.options.restore:
                 fm = RemoteFileManager(RemotePaths(target.name, starport))
-                self.restore_target(target, fm, self.settings)
+                self.restore_target(target, fm)
             else:
                 logging.info("  (Skipping restoring {} - "
                              "restore is false in config)".format(target.name))
 
-    def restore_target(self, target, fm: RemoteFileManager, settings: Settings):
-        fm.validate_instance(settings.instance_guid)
+    def restore_target(self, target, fm: RemoteFileManager):
         target.before_restore()
         self.rsync.restore_volume(target.mount_id, fm.get_rsync_path())
 

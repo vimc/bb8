@@ -79,8 +79,8 @@ def test_restore_target_is_only_called_for_targets_with_restore_set_to_true():
 
     # Check
     sut.restore_target.assert_has_calls([
-        call(targets[0], ANY, settings),
-        call(targets[2], ANY, settings),
+        call(targets[0], ANY),
+        call(targets[2], ANY),
     ])
 
 
@@ -94,9 +94,8 @@ def test_restore_target():
     sut = RestoreTask(lambda: {}, rsync=rsync)
 
     # Test
-    sut.restore_target(target, fm, mock_settings([target]))
+    sut.restore_target(target, fm)
 
     # Check
-    fm.validate_instance.assert_called_once_with(mock_instance_guid)
     target.before_restore.assert_called_once()
     rsync.restore_volume.assert_called_with("mount-a", "/some/path")
