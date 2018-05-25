@@ -6,6 +6,13 @@ from shellescape import quote
 from .remote_paths import RemotePaths
 
 
+def default_metadata():
+    return {
+        "last_backup": None,
+        "instance_guid": None
+    }
+
+
 class RemoteFileManager(object):
     def __init__(self, paths: RemotePaths, docker_client=docker.from_env()):
         self.paths = paths
@@ -29,10 +36,7 @@ class RemoteFileManager(object):
         if output:
             return json.loads(output)
         else:
-            return {
-                "last_backup": None,
-                "instance_guid": None
-            }
+            return default_metadata()
 
     def write_metadata(self, metadata):
         json_content = json.dumps(metadata)
