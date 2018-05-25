@@ -4,7 +4,7 @@ import logging
 from .remote_file_manager import RemoteFileManager
 from .remote_paths import RemotePaths
 from .docker_rsync import DockerRsync
-from .settings import load_settings, log_dir
+from .settings import load_settings, log_dir, Settings
 
 
 class RestoreTask(object):
@@ -24,12 +24,13 @@ class RestoreTask(object):
             logging.info("- " + target.id)
             if target.options.restore:
                 fm = RemoteFileManager(RemotePaths(target.name, starport))
-                self.restore_target(target, fm)
+                self.restore_target(target, fm, self.settings)
             else:
                 logging.info("  (Skipping restoring {} - "
                              "restore is false in config)".format(target.name))
 
-    def restore_target(self, target, fm: RemoteFileManager):
+    def restore_target(self, target, fm: RemoteFileManager, settings: Settings):
+        fm.validate_instance(settings.instance_guid)
         target.before_restore()
         self.rsync.restore_volume(target.mount_id, fm.get_rsync_path())
 

@@ -1,6 +1,8 @@
 from unittest.mock import MagicMock, call
 
-from bin.bb8.remote_file_manager import RemoteFileManager
+import pytest
+
+from bin.bb8.remote_file_manager import RemoteFileManager, default_metadata
 from tests.mocks import Dynamic
 
 
@@ -13,7 +15,7 @@ class TestRemoteFileManager(object):
         sut.run_remote_cmd = lambda x: ""
 
         # Test
-        assert sut.get_metadata() is None
+        assert sut.get_metadata() == default_metadata()
 
     def test_get_metadata_when_metadata_exists(self):
         # Setup
@@ -60,3 +62,24 @@ class TestRemoteFileManager(object):
         paths = Dynamic("paths", rsync_path="/some/path")
         sut = RemoteFileManager(paths)
         assert sut.get_rsync_path() == "/some/path"
+
+    def test_validate_instance_raises_exception_if_mismatched(self):
+        # Setup
+        sut = RemoteFileManager(Dynamic("paths"))
+        sut.get_metadata = lambda: {
+            "instance_guid": "foreign_guid"
+        }
+
+        # Test
+        expected_message = "This target has been backed up by a different " \
+                           "instance of bb8: target"
+        with pytest.raises(Exception, message=expected_message):
+            sut.validate_instance("local_guid")
+
+    def test_validate_instance_passes_if_matched(self):
+        sut = RemoteFileManager(Dynamic("paths"))
+        sut.get_metadata = lambda: {
+            "instance_guid": "local_guid"
+        }
+        # Does not throw
+        sut.validate_instance("local_guid")

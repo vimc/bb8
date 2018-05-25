@@ -3,6 +3,7 @@
 Usage:
   setup.py [TARGET ...]
 """
+import uuid
 
 from docopt import docopt
 
@@ -29,9 +30,11 @@ def setup_targets():
         config = json.load(f)
     check_user_input(config, desired_targets)
     machine_targets = list(x for x in config["targets"] if x["name"] in desired_targets)
+    instance_guid = str(uuid.uuid4())
     machine_config = {
         'starport': config["starport"],
-        'targets': machine_targets
+        'targets': machine_targets,
+        'instance_guid': instance_guid
     }
     with open(config_path, 'w') as f:
         json.dump(machine_config, f, indent=4)
