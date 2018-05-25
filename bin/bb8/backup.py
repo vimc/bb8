@@ -8,7 +8,7 @@ from tzlocal import get_localzone
 from .remote_file_manager import RemoteFileManager
 from .remote_paths import RemotePaths
 from .docker_rsync import DockerRsync
-from .settings import load_settings, log_dir
+from .settings import load_settings, log_dir, Settings
 
 client = docker.from_env()
 
@@ -29,19 +29,22 @@ class BackupTask(object):
             logging.info("- " + target.id)
             if target.options.backup:
                 fm = RemoteFileManager(RemotePaths(target.name, starport))
-                self.backup_target(target, fm)
+                self.backup_target(target, fm, self.settings)
             else:
                 logging.info("  (Skipping backing up {} - "
                              "backup is false in config)".format(target.name))
 
-    def backup_target(self, target, fm: RemoteFileManager):
+    def backup_target(self, target, fm: RemoteFileManager, settings: Settings):
         fm.create_directories()
+        fm.validate_instance(settings.instance_guid)
         self.rsync.backup_volume(target.mount_id, fm.get_rsync_path())
-        fm.write_metadata(self.make_metadata())
+        fm.write_metadata(self.make_metadata(settings))
 
-    def make_metadata(self):
+    def make_metadata(self, settings: Settings):
+        now = datetime.now().astimezone(get_localzone()).isoformat()
         return {
-            "last_backup": datetime.now().astimezone(get_localzone()).isoformat()
+            "last_backup": now,
+            "instance_guid": settings.instance_guid
         }
 
 

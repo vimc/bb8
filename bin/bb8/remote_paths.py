@@ -4,6 +4,7 @@ from os.path import join
 
 class RemotePaths(object):
     def __init__(self, target_name, starport):
+        self.target_name = target_name
         self.host = "{user}@{addr}".format(**starport)
         self.remote_bucket_path = self._remote_bucket_path(target_name,
                                                            starport)

@@ -29,7 +29,10 @@ class RemoteFileManager(object):
         if output:
             return json.loads(output)
         else:
-            return None
+            return {
+                "last_backup": None,
+                "instance_guid": None
+            }
 
     def write_metadata(self, metadata):
         json_content = json.dumps(metadata)
@@ -46,3 +49,10 @@ class RemoteFileManager(object):
 
     def get_rsync_path(self):
         return self.paths.rsync_path
+
+    def validate_instance(self, local_guid):
+        metadata = self.get_metadata()
+        remote_guid = metadata["instance_guid"]
+        if remote_guid and local_guid and remote_guid != local_guid:
+            raise Exception("Target {} has been backed up by a different "
+                            "instance of bb8.".format(self.paths.target_name))
