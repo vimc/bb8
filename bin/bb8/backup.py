@@ -1,26 +1,49 @@
 #!/usr/bin/env python3
+from datetime import datetime
 import logging
 
 import docker
+from tzlocal import get_localzone
 
+from .remote_file_manager import RemoteFileManager
+from .remote_paths import RemotePaths
 from .docker_rsync import DockerRsync
 from .settings import load_settings, log_dir
 
 client = docker.from_env()
 
 
-def run_backup(settings_source=load_settings, rsync=DockerRsync()):
-    logging.info("Backing up targets to Starport. Output will be logged "
-                 "to {}".format(log_dir))
-    settings = settings_source()
-    starport = settings.starport
-    logging.info("Backing up to {}: ".format(starport["addr"]))
+class BackupTask(object):
+    def __init__(self, settings_source=load_settings, rsync=DockerRsync()):
+        self.settings = settings_source()
+        self.rsync = rsync
 
-    targets = list(t for t in settings.targets)
-    for target in targets:
-        logging.info("- " + target.id)
-        if target.options.backup:
-            rsync.backup_volume(settings, target.name, target.mount_id)
-        else:
-            template = "  (Skipping backing up {} - backup is false in config)"
-            logging.info(template.format(target.name))
+    def run(self):
+        logging.info("Backing up targets to Starport. Output will be logged "
+                     "to {}".format(log_dir))
+        starport = self.settings.starport
+        logging.info("Backing up to {}: ".format(starport["addr"]))
+
+        targets = list(t for t in self.settings.targets)
+        for target in targets:
+            logging.info("- " + target.id)
+            if target.options.backup:
+                fm = RemoteFileManager(RemotePaths(target.name, starport))
+                self.backup_target(target, fm)
+            else:
+                logging.info("  (Skipping backing up {} - "
+                             "backup is false in config)".format(target.name))
+
+    def backup_target(self, target, fm: RemoteFileManager):
+        fm.create_directories()
+        self.rsync.backup_volume(target.mount_id, fm.get_rsync_path())
+        fm.write_metadata(self.make_metadata())
+
+    def make_metadata(self):
+        return {
+            "last_backup": datetime.now().astimezone(get_localzone()).isoformat()
+        }
+
+
+def run_backup():
+    BackupTask().run()

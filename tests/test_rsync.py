@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock, ANY, call
 
 from bin.bb8.docker_rsync import DockerRsync
-from tests.mocks import mock_starport_settings, mock_settings
+from tests.mocks import mock_remote_paths
 
 
-# noinspection PyProtectedMember,PyMethodMayBeStatic
+# noinspection PyProtectedMember,PyMethodMayBeStatic,PyTypeChecker
 class TestDockerRsync(object):
     def test_get_volume_args(self):
         sut = DockerRsync()
@@ -14,39 +14,19 @@ class TestDockerRsync(object):
             "mode": "some-mode"
         }
 
-    def test_get_remote_dir(self):
-        sut = DockerRsync()
-        dir = sut._get_remote_data_dir("jean@paris", "target")
-        assert dir == "jean@paris:target/data/"
-
-    def test_get_host(self):
-        sut = DockerRsync()
-        host = sut._get_host(mock_starport_settings)
-        assert host == "jean@paris"
-
-    def test_get_target_path(self):
-        sut = DockerRsync()
-        path = sut._get_target_path("/location/", "/target_name/")
-        assert path == "/location/target_name/"
-
     def test_backup_volume(self):
         # Setup
         sut = DockerRsync()
         sut._run_rsync = MagicMock()
-        sut._make_remote_dir = MagicMock()
         sut._get_volume_args = MagicMock(wraps=sut._get_volume_args)
 
         # Test
-        sut.backup_volume(mock_settings(), "target", "local")
+        sut.backup_volume("local", "host:remote/path/")
 
         # Check
         sut._run_rsync.assert_called_once_with(
-            ANY, "local", "jean@paris:starport/target/data/", True)
+            ANY, "local", "host:remote/path/", relative=True)
         sut._get_volume_args.assert_called_once_with("local", "ro")
-        sut._make_remote_dir.assert_has_calls([
-            call("jean@paris", "starport/target/data"),
-            call("jean@paris", "starport/target/meta"),
-        ])
 
     def test_restore_volume(self):
         # Setup
@@ -55,9 +35,9 @@ class TestDockerRsync(object):
         sut._get_volume_args = MagicMock(wraps=sut._get_volume_args)
 
         # Test
-        sut.restore_volume(mock_settings(), "target", "local")
+        sut.restore_volume("local", "host:remote/path/")
 
         # Check
         sut._run_rsync.assert_called_once_with(
-            ANY, "jean@paris:starport/target/data/local/", "/local", False)
+            ANY, "host:remote/path/local/", "/local", relative=False)
         sut._get_volume_args.assert_called_once_with("local", "rw")
