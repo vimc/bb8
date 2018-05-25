@@ -1,45 +1,46 @@
 import json
 import sys
-from os.path import join
 
 import docker as docker
 from dateutil import parser
 from tzlocal import get_localzone
 
+from .remote_file_manager import RemoteFileManager
+from .remote_paths import RemotePaths
 from .settings import load_settings
 
 
-def get_last_backup():
-    return "??"
+def get_last_backup(fm: RemoteFileManager):
+    metadata = fm.get_metadata()
+    if metadata:
+        return normalize_timestamp(metadata["last_backup"])
+    else:
+        return "Never backed up"
 
 
 def interpret_timestamp_output(raw, timezone=None):
     string = raw.decode('utf-8').strip()
     if string:
-        timezone = timezone or get_localzone()
-        return parser.parse(string) \
-            .replace(microsecond=0) \
-            .astimezone(timezone) \
-            .isoformat(" ")
+        return normalize_timestamp(string, timezone)
     else:
         return "No files present"
 
 
-def last_modified_remote(target, docker_client, starport):
-    remote_path = join(starport["backup_location"], target.mount_id.strip('/'))
-    remote_cmd = 'find -L {} -type f -print0'.format(remote_path) + \
+def normalize_timestamp(string, timezone=None):
+    timezone = timezone or get_localzone()
+    return parser.parse(string) \
+        .replace(microsecond=0) \
+        .astimezone(timezone) \
+        .isoformat(" ")
+
+
+def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
+    remote_cmd = 'find -L {} -type f -print0'.format(paths.data) + \
                  ' | xargs -0 stat --format "%Y :%y"' \
                  ' | sort -nr' \
                  ' | cut -d: -f2-' \
                  ' | head -n 1'
-    cmd = ["ssh", "{user}@{addr}".format(**starport), remote_cmd]
-    volumes = {
-        "bb8_ssh": {"bind": "/root/.ssh", "mode": "ro"}
-    }
-    output = docker_client.containers.run("instrumentisto/rsync-ssh",
-                                          command=cmd,
-                                          volumes=volumes,
-                                          remove=True)
+    output = fm.run_remote_cmd(remote_cmd)
     return interpret_timestamp_output(output)
 
 
@@ -58,12 +59,13 @@ def last_modified_local(target, docker_client):
 
 def get_target_status(target, docker_client, settings):
     starport = settings.starport
+    paths = RemotePaths(target.name, starport)
+    fm = RemoteFileManager(paths, docker_client)
     return {
         "target": target.name,
-        "last_backup": get_last_backup(),
+        "last_backup": get_last_backup(fm),
         "last_modified_local": last_modified_local(target, docker_client),
-        "last_modified_remote": last_modified_remote(target, docker_client,
-                                                     starport)
+        "last_modified_remote": last_modified_remote(fm, paths)
     }
 
 
