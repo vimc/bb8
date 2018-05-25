@@ -3,6 +3,7 @@
 Usage:
   setup.py [TARGET ...]
 """
+import uuid
 
 from docopt import docopt
 import string
@@ -24,10 +25,6 @@ def check_user_input(config, desired_targets):
         exit(-2)
 
 
-def id_generator(size=7, chars=string.ascii_uppercase + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
-
-
 def setup_targets():
     args = docopt(__doc__)
     desired_targets = args["TARGET"]
@@ -35,7 +32,7 @@ def setup_targets():
         config = json.load(f)
     check_user_input(config, desired_targets)
     machine_targets = list(x for x in config["targets"] if x["name"] in desired_targets)
-    instance_guid = id_generator()
+    instance_guid = str(uuid.uuid4())
     machine_config = {
         'starport': config["starport"],
         'targets': machine_targets,
