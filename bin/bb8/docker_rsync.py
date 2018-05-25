@@ -13,7 +13,7 @@ class DockerRsync(object):
         self.client = client
 
     def _run_rsync(self, volumes, from_path, to_path, relative):
-        chown = "{}:{}".format(getuid(), getgid())
+
         # Disable ssh compression:
         # https://galaxysd.github.io/20160302/Fastest-Way-Rsync
         ssh_cmd = "ssh -o Compression=no"
@@ -27,8 +27,8 @@ class DockerRsync(object):
                # specify remote shell program explicitly (i.e. ssh as opposed
                # to the default rsh)
                "-e", ssh_cmd,
-               "--perms", "--owner", "--group",
-               "--chown=" + chown,
+               # preserve file permissions
+               "--perms",
                # delete destination files not in source
                "--delete",
                # print overall progress
