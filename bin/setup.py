@@ -6,8 +6,6 @@ Usage:
 import uuid
 
 from docopt import docopt
-import string
-import random
 
 from bb8.settings import *
 
