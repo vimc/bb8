@@ -35,7 +35,7 @@ def normalize_timestamp(string, timezone=None):
 
 
 def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
-    remote_cmd = 'find -L {} -type f -o -type d -print0'.format(paths.data) + \
+    remote_cmd = 'find -L {}  -print0 -type f -o -type d'.format(paths.data) + \
                  ' | xargs -0 stat --format "%Y :%y"' \
                  ' | sort -nr' \
                  ' | cut -d: -f2-' \
