@@ -35,7 +35,7 @@ def normalize_timestamp(string, timezone=None):
 
 
 def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
-    remote_cmd = 'find -L {} -type f -print0'.format(paths.data) + \
+    remote_cmd = 'find -L {}  -print0 -type f -o -type d'.format(paths.data) + \
                  ' | xargs -0 stat --format "%Y :%y"' \
                  ' | sort -nr' \
                  ' | cut -d: -f2-' \
@@ -45,7 +45,7 @@ def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
 
 
 def last_modified_local(target, docker_client):
-    cmd = 'find -L /data -type f -print0' \
+    cmd = 'find -L /data  -print0 -type f -o -type d' \
           ' | xargs -0 stat -c "%y"' \
           ' | sort -nr' \
           ' | head -n 1'
