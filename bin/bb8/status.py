@@ -6,6 +6,7 @@ import docker as docker
 from dateutil import parser
 from tzlocal import get_localzone
 
+from .targets import NamedVolumeTarget
 from .remote_file_manager import RemoteFileManager
 from .remote_paths import RemotePaths
 from .settings import load_settings
@@ -45,7 +46,7 @@ def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
 
 
 def last_modified_local(target, docker_client):
-    if target.mount_id not in [v.id for v in docker_client.volumes.list()]:
+    if isinstance(target, NamedVolumeTarget) and target.mount_id not in [v.id for v in docker_client.volumes.list()]:
         return None
 
     cmd = 'find -L /data  -print0 -type f -o -type d' \
