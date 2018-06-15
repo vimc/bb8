@@ -17,10 +17,11 @@ class TargetOptions:
 
 
 class DirectoryTarget:
-    def __init__(self, name, path, options):
+    def __init__(self, name, path, options, docker_client=None):
         self.name = name
         self.path = path
         self.options = options
+        self.docker = docker_client or docker.client.from_env()
 
     @property
     def id(self):
@@ -34,7 +35,12 @@ class DirectoryTarget:
         pass
 
     def exists_locally(self):
-        return os.path.isdir(self.path)
+        volumes = {self.mount_id: {"bind": "/data", "mode": "ro"}}
+        output = self.docker.containers.run("bash",
+                                            command=["bash", "-c", '[ -d /data ] && echo 1'],
+                                            volumes=volumes,
+                                            remove=True).decode('utf-8').strip()
+        return output == "1"
 
     def __eq__(self, other):
         return self.id == other.id \
