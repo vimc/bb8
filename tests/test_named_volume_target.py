@@ -32,6 +32,14 @@ class TestNamedVolumeTarget(object):
         vol.before_restore()
         assert vol._volume_exists()
 
+    def test_exists_locally(self):
+        """Test local existence of volume"""
+        self.remove_test_volume_if_exists()
+        vol = targets.NamedVolumeTarget("mytarget", self.dummy_volume_name, None)
+        assert not vol.exists_locally()
+        vol.before_restore()
+        assert vol.exists_locally()
+
     @classmethod
     def remove_test_volume_if_exists(cls):
         try:

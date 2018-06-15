@@ -35,12 +35,7 @@ class DirectoryTarget:
         pass
 
     def exists_locally(self):
-        volumes = {self.mount_id: {"bind": "/data", "mode": "ro"}}
-        output = self.docker.containers.run("bash",
-                                            command=["bash", "-c", '[ -d /data ] && echo 1'],
-                                            volumes=volumes,
-                                            remove=True).decode('utf-8').strip()
-        return output == "1"
+        return True
 
     def __eq__(self, other):
         return self.id == other.id \
@@ -72,7 +67,7 @@ class NamedVolumeTarget:
             self.docker.volumes.create(self.volume)
 
     def exists_locally(self):
-        return self.mount_id in [v.id for v in self.docker.volumes.list()]
+        return self._volume_exists()
 
     def __eq__(self, other):
         return self.id == other.id \
