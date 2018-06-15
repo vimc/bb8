@@ -37,4 +37,5 @@ class TestDirectoryTarget(object):
 
     @classmethod
     def remove_test_dir_if_exists(cls):
-        shutil.rmtree(cls.dummy_dir_name)
+        if os.path.exists(cls.dummy_dir_name):
+            shutil.rmtree(cls.dummy_dir_name)

@@ -40,6 +40,7 @@ class DirectoryTarget:
                                             command=["bash", "-c", '[ -z "$(ls -A /data)" ] && echo 1'],
                                             volumes=volumes,
                                             remove=True).decode('utf-8').strip()
+
         return output is not "1"
 
     def __eq__(self, other):
