@@ -1,4 +1,5 @@
 import docker
+import os
 
 
 class TargetOptions:
@@ -32,6 +33,9 @@ class DirectoryTarget:
     def before_restore(self):
         pass
 
+    def exists_locally(self):
+        return os.path.isdir(self.path)
+
     def __eq__(self, other):
         return self.id == other.id \
                and self.path == other.path \
@@ -60,6 +64,9 @@ class NamedVolumeTarget:
         if not self._volume_exists():
             print("Creating docker volume with name '{}'".format(self.volume))
             self.docker.volumes.create(self.volume)
+
+    def exists_locally(self):
+        return self.mount_id in [v.id for v in self.docker.volumes.list()]
 
     def __eq__(self, other):
         return self.id == other.id \
