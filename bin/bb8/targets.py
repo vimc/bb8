@@ -34,8 +34,13 @@ class DirectoryTarget:
     def before_restore(self):
         pass
 
-    def exists_locally(self):
-        return True
+    def files_exist_locally(self):
+        volumes = {self.mount_id: {"bind": "/data", "mode": "ro"}}
+        output = self.docker.containers.run("bash",
+                                            command=["bash", "-c", '[ -z "$(ls -A /data)" ] && echo 1'],
+                                            volumes=volumes,
+                                            remove=True).decode('utf-8').strip()
+        return output is not "1"
 
     def __eq__(self, other):
         return self.id == other.id \
@@ -66,7 +71,7 @@ class NamedVolumeTarget:
             print("Creating docker volume with name '{}'".format(self.volume))
             self.docker.volumes.create(self.volume)
 
-    def exists_locally(self):
+    def files_exist_locally(self):
         return self._volume_exists()
 
     def __eq__(self, other):

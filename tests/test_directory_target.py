@@ -9,20 +9,32 @@ from bin.bb8 import targets
 class TestDirectoryTarget(object):
     """Tests for NamedVolumeTarget"""
     docker = docker.client.from_env()
+    dummy_dir_name = "/doesnt/exist"
+
+    @classmethod
+    def setup_class(cls):
+        cls.remove_test_dir_if_exists()
+
+    @classmethod
+    def teardown_class(cls):
+        cls.remove_test_dir_if_exists()
 
     def test_properties(self):
         """Test properties of constructed directory target"""
-        dir_path = "/some/dir/"
-        target = targets.DirectoryTarget("mytarget", dir_path, None)
+        target = targets.DirectoryTarget("mytarget", self.dummy_dir_name, None)
         assert target.name == "mytarget"
-        assert target.path == dir_path
+        assert target.path == self.dummy_dir_name
         assert target.id == "Directory: mytarget"
-        assert target.mount_id == dir_path
+        assert target.mount_id == self.dummy_dir_name
 
     def test_exists_locally(self):
-        """Directory targets always report as existent"""
-        dir_path = "/doesnt/exist/"
-        target = targets.DirectoryTarget("mytarget", dir_path, None)
-        assert target.exists_locally()
+        """Test directory target has files in"""
+        target = targets.DirectoryTarget("mytarget", self.dummy_dir_name, None)
+        assert not target.files_exist_locally()
 
+        target = targets.DirectoryTarget("mytarget", "/etc/", None)
+        assert target.files_exist_locally()
 
+    @classmethod
+    def remove_test_dir_if_exists(cls):
+        shutil.rmtree(cls.dummy_dir_name)

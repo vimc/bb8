@@ -46,7 +46,7 @@ def last_modified_remote(fm: RemoteFileManager, paths: RemotePaths):
 
 
 def last_modified_local(target, docker_client):
-    if not target.exists_locally():
+    if not target.files_exist_locally():
         return None
 
     cmd = 'find -L /data  -print0 -type f -o -type d' \
