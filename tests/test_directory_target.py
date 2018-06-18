@@ -28,11 +28,11 @@ class TestDirectoryTarget(object):
         assert target.mount_id == self.dummy_dir_name
 
     def test_exists_locally(self):
-        """Test directory target has files in"""
+        """Test whether directory target has files in"""
         target = targets.DirectoryTarget("mytarget", self.dummy_dir_name, None)
         assert not target.files_exist_locally()
 
-        target = targets.DirectoryTarget("mytarget", "/etc/", None)
+        target = targets.DirectoryTarget("mytarget", "/etc", None)
         assert target.files_exist_locally()
 
     @classmethod

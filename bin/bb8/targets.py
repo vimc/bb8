@@ -37,11 +37,12 @@ class DirectoryTarget:
     def files_exist_locally(self):
         volumes = {self.mount_id: {"bind": "/data", "mode": "ro"}}
         output = self.docker.containers.run("bash",
-                                            command=["bash", "-c", '[ -z "$(ls -A /data)" ] && echo 1'],
+                                            command=["bash", "-c", '([ -z "$(ls -A /data)" ] && echo "Empty")'],
                                             volumes=volumes,
-                                            remove=True).decode('utf-8').strip()
+                                            remove=True)
+        print(output.decode('utf-8').strip())
 
-        return output is not "1"
+        return output is not "Empty"
 
     def __eq__(self, other):
         return self.id == other.id \
