@@ -1,4 +1,5 @@
 import docker
+import os
 
 
 class TargetOptions:
@@ -16,10 +17,11 @@ class TargetOptions:
 
 
 class DirectoryTarget:
-    def __init__(self, name, path, options):
+    def __init__(self, name, path, options, docker_client=None):
         self.name = name
         self.path = path
         self.options = options
+        self.docker = docker_client or docker.client.from_env()
 
     @property
     def id(self):
@@ -31,6 +33,15 @@ class DirectoryTarget:
 
     def before_restore(self):
         pass
+
+    def files_exist_locally(self):
+        test_empty_cmd = '([ -z "$(ls -A /data)" ] && echo "Empty") || echo "NotEmpty"'
+        volumes = {self.mount_id: {"bind": "/data", "mode": "ro"}}
+        output = self.docker.containers.run("bash",
+                                            command=["bash", "-c", test_empty_cmd],
+                                            volumes=volumes,
+                                            remove=True)
+        return output.decode('utf-8').strip() != "Empty"
 
     def __eq__(self, other):
         return self.id == other.id \
@@ -60,6 +71,9 @@ class NamedVolumeTarget:
         if not self._volume_exists():
             print("Creating docker volume with name '{}'".format(self.volume))
             self.docker.volumes.create(self.volume)
+
+    def files_exist_locally(self):
+        return self._volume_exists()
 
     def __eq__(self, other):
         return self.id == other.id \
