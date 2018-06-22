@@ -6,4 +6,4 @@ if [ "$VAULT_AUTH_GITHUB_TOKEN" = "" ]; then
     export VAULT_AUTH_GITHUB_TOKEN=${token}
 fi
 echo "Authenticating with the Vault"
-export VAULT_TOKEN=$(vault auth --method=github --token-only)
+export VAULT_TOKEN=$(vault login --method=github --token-only)
