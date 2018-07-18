@@ -4,7 +4,7 @@ import logging
 from .remote_file_manager import RemoteFileManager
 from .remote_paths import RemotePaths
 from .docker_rsync import DockerRsync
-from .settings import load_settings, log_dir
+from .settings import load_settings, log_dir, Settings
 
 
 class RestoreTask(object):

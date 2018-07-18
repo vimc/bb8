@@ -21,6 +21,11 @@ class Settings:
         self.starport = config["starport"]
         self.targets = list(Settings.parse_target(t) for t in config["targets"])
 
+        if "instance_guid" in config:
+            self.instance_guid = config["instance_guid"]
+        else:
+            self.instance_guid = None
+
     @classmethod
     def parse_target(cls, data):
         t = data["type"]
