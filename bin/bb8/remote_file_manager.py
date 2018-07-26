@@ -56,7 +56,7 @@ class RemoteFileManager(object):
 
     def validate_instance(self, local_guid):
         metadata = self.get_metadata()
-        remote_guid = metadata["instance_guid"]
+        remote_guid = metadata.get("instance_guid", None)
         if remote_guid and local_guid and remote_guid != local_guid:
             raise Exception("Target {} has been backed up by a different "
                             "instance of bb8.".format(self.paths.target_name))
