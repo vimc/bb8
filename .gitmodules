@@ -1,0 +1,3 @@
+[submodule "bb8-metrics/app/metrics"]
+	path = bb8-metrics/app/metrics
+	url = https://github.com/vimc/montagu-metrics-py

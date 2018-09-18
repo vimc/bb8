@@ -43,7 +43,7 @@ if [ "$link_status" != "$path"  ]; then
     ln -sf $path $link_path
 fi
 
-metrics_path=$(realpath ${HERE}/metrics)
+metrics_path=$(realpath ${HERE}/bb8-metrics)
 
 $metrics_path/run $(realpath ${HERE}/bb8)
 

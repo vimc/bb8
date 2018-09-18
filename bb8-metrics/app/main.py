@@ -2,7 +2,8 @@
 from flask import Flask
 
 from subprocess import check_output
-from metrics import render_metrics, target_metrics
+from metrics.metrics import render_metrics
+from target_metrics import target_metrics
 
 app = Flask(__name__)
 
