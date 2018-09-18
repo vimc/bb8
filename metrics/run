@@ -9,7 +9,6 @@ docker run --rm \
     -p 5000:80 \
     -v $(realpath $parent/bb8):/usr/local/bin/bb8  \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    --network=host \
     --detach \
     --name=bb8_metrics_1\
     bb8_metrics
