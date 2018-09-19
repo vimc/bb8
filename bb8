@@ -13,6 +13,7 @@ docker run \
     --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v bb8_ssh:/bb8/etc/.ssh \
+    -v /etc/machine-id:/bb8/etc/machine-id \
     -v bb8_logs:/bb8/logs \
     -v /etc/timezone:/etc/timezone:ro \
     --name $container_name \
