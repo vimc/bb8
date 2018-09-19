@@ -1,5 +1,5 @@
 import json
-from os.path import join, abspath
+from os.path import join, isfile
 
 from .targets import DirectoryTarget, NamedVolumeTarget, TargetOptions
 
@@ -9,6 +9,7 @@ config_path = join(root_path, "config.json")
 ssh_key_path = join(root_path, "secrets/ssh_key")
 host_key_path = join(root_path, "secrets/host_key")
 known_hosts_path = join(root_path, "known_hosts")
+machine_id_path = join(root_path, "machine-id")
 
 log_dir = '/bb8/logs/'
 
@@ -21,8 +22,9 @@ class Settings:
         self.starport = config["starport"]
         self.targets = list(Settings.parse_target(t) for t in config["targets"])
 
-        if "instance_guid" in config:
-            self.instance_guid = config["instance_guid"]
+        if isfile(machine_id_path):
+            with open(machine_id_path, 'r') as f:
+                self.instance_guid = f.read().replace('\n', '')
         else:
             self.instance_guid = None
 
