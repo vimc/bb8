@@ -9,13 +9,12 @@ config_path = join(root_path, "config.json")
 ssh_key_path = join(root_path, "secrets/ssh_key")
 host_key_path = join(root_path, "secrets/host_key")
 known_hosts_path = join(root_path, "known_hosts")
-machine_id_path = join(root_path, "machine-id")
 
 log_dir = '/bb8/logs/'
 
 
 class Settings:
-    def __init__(self, path=config_path):
+    def __init__(self, path=config_path, machine_id_path=join(root_path, "machine-id")):
         with open(path, 'r') as f:
             config = json.load(f)
 
