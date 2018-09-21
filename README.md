@@ -89,3 +89,10 @@ Once the docker image is built, the setup script also creates required
 volumes for bb8, and invokes the built image to dump out the SSH key and 
 known hosts file that will be required for the rsync container.
 
+# Development
+To test setting up the starport locally, use:
+
+```
+export STARTPORT_SECRETS_PATH=secret/tmp/SOME_FOLDER
+sudo -E ./setup_starport STARPORT_DIR YOUR_USER
+```
