@@ -1,6 +1,6 @@
 [submodule "bb8-metrics/app/metrics"]
 	path = bb8-metrics/app/metrics
 	url = https://github.com/vimc/montagu-metrics-py
-[submodule "starport-metrics/metrics"]
-	path = starport-metrics/metrics
+[submodule "starport-metrics/app/metrics"]
+	path = starport-metrics/app/metrics
 	url = https://github.com/vimc/montagu-metrics-py
