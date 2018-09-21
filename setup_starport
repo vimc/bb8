@@ -16,6 +16,7 @@ fi
 bb8_user=$2
 starport=$1
 bb8_user_home=$(eval echo ~$bb8_user)
+HERE=$(dirname $0)
 
 source ${BASH_SOURCE%/*}/vault_auth.sh
 
