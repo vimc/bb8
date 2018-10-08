@@ -1,5 +1,5 @@
 import json
-from os.path import join, abspath
+from os.path import join, isfile
 
 from .targets import DirectoryTarget, NamedVolumeTarget, TargetOptions
 
@@ -14,15 +14,16 @@ log_dir = '/bb8/logs/'
 
 
 class Settings:
-    def __init__(self, path=config_path):
+    def __init__(self, path=config_path, machine_id_path=join(root_path, "machine-id")):
         with open(path, 'r') as f:
             config = json.load(f)
 
         self.starport = config["starport"]
         self.targets = list(Settings.parse_target(t) for t in config["targets"])
 
-        if "instance_guid" in config:
-            self.instance_guid = config["instance_guid"]
+        if isfile(machine_id_path):
+            with open(machine_id_path, 'r') as f:
+                self.instance_guid = f.read().replace('\n', '')
         else:
             self.instance_guid = None
 

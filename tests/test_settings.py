@@ -27,19 +27,6 @@ json = """{
     ]
 }"""
 
-json_with_guid = """{
-    "starport": {
-        "addr": "the moon",
-        "ip": "127.0.0.1",
-        "user": "astronaut",
-        "backup_location": "houston"
-    },
-    "instance_guid": "1234",
-    "targets": [
-    
-    ]
-}"""
-
 
 def test_can_parse_settings():
     s = Settings('test.json')
@@ -57,17 +44,17 @@ def test_can_parse_settings():
 
 
 def test_can_parse_settings_with_guid():
-    with open('test.json', 'w') as f:
-        f.write(json_with_guid)
-    s = Settings('test.json')
-
+    s = Settings('test.json', machine_id_path="machine-id.json")
     assert s.instance_guid == "1234"
 
 
 def setup_module(module):
     with open('test.json', 'w') as f:
         f.write(json)
+    with open('machine-id.json', 'w') as f:
+        f.write("1234")
 
 
 def teardown_module(module):
     os.remove('test.json')
+    os.remove('machine-id.json')
