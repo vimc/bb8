@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -ex
+
+if [[ ($# -eq 0) ]]; then
+    echo "Usage: ./run STARPORT_ABS_PATH"
+    exit -1;
+fi
+
+HERE=${BASH_SOURCE%/*}
+starport=$1
+
+docker build --tag starport_metrics --file  $HERE/Dockerfile $HERE
+
+docker run --rm \
+    -p 5000:80 \
+    -v $1:/starport  \
+    --detach \
+    --name=bb8_metrics_1 \
+    starport_metrics

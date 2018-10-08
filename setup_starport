@@ -16,6 +16,8 @@ fi
 bb8_user=$2
 starport=$1
 bb8_user_home=$(eval echo ~$bb8_user)
+SECRETS_PATH=${STARPORT_SECRET_PATH:-secret/annex}
+HERE=$(dirname $0)
 
 source ${BASH_SOURCE%/*}/vault_auth.sh
 
@@ -40,11 +42,12 @@ while getopts f o; do
     force=true
 done
 
-if vault read secret/annex/id_rsa > /dev/null ; then
+if vault read $SECRETS_PATH/id_rsa > /dev/null ; then
     if [ "$force" != true ] ; then
-        echo 'Starport has already been set up and keys for bb8 generated'
-        echo 'If you want to override these keys pass the -f option'
-        echo 'This will invalidate the ssh credentials of any running bb8 instances'
+        echo "Starport has already been set up and keys for bb8 generated and"
+        echo "stored in the vault at $SECRETS_PATH."
+        echo "If you want to override these keys pass the -f option"
+        echo "This will invalidate the ssh credentials of any running bb8 instances"
         exit 1
     else
         echo 'Overriding existing ssh credentials'
@@ -52,10 +55,16 @@ if vault read secret/annex/id_rsa > /dev/null ; then
 fi
 
 ssh-keygen -f $KEY_PATH/id_rsa -q -N ""
-vault write secret/annex/id_rsa value=@$KEY_PATH/id_rsa
-vault write secret/annex/id_rsa.pub value=@$KEY_PATH/id_rsa.pub
-vault write secret/annex/host_key value=@/etc/ssh/ssh_host_ecdsa_key.pub
+vault write $SECRETS_PATH/id_rsa value=@$KEY_PATH/id_rsa
+vault write $SECRETS_PATH/id_rsa.pub value=@$KEY_PATH/id_rsa.pub
+vault write $SECRETS_PATH/host_key value=@/etc/ssh/ssh_host_ecdsa_key.pub
 
 cat $KEY_PATH/id_rsa.pub >> $bb8_user_home/.ssh/authorized_keys
 
+echo "Setting up metrics exporter on port 5000"
+metrics_path=$(realpath ${HERE}/starport-metrics)
+
+$metrics_path/run $(realpath $starport)
+
+echo "-----------------------------------------------"
 echo "Setup of Starport complete. You can now set up production"

@@ -1,0 +1,3 @@
+[submodule "starport-metrics/app/metrics"]
+	path = starport-metrics/app/metrics
+	url = https://github.com/vimc/montagu-metrics-py
