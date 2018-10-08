@@ -1,4 +1,4 @@
-# bb8 metrics exporters
+# bb8 starport metrics exporters
 
 A small Flask app, designed to be run inside a docker container, that exposes a single `/metrics` endpoint returning
  metadata from the local starport in a format that Prometheus can use for monitoring.
