@@ -23,10 +23,10 @@ def build_target_metrics(starport):
                 since_last_backup = seconds_elapsed_since(last_backup)
                 item_metrics = {
                     "metadata_present": True,
-                    "time_since_last_backup_seconds": since_last_backup,
-                    "time_since_last_backup_minutes": since_last_backup / 60,
-                    "time_since_last_backup_hours": since_last_backup / 3600,
-                    "time_since_last_backup_days": since_last_backup / (3600*24)
+                    "time_since_last_backup_seconds": round(since_last_backup),
+                    "time_since_last_backup_minutes": round(since_last_backup / 60),
+                    "time_since_last_backup_hours": round(since_last_backup / 3600),
+                    "time_since_last_backup_days": round(since_last_backup / (3600*24))
                 }
 
                 item_metrics = label_metrics(item_metrics, {"target_id": target})
