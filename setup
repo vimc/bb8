@@ -12,6 +12,10 @@ shift && targets="$@"   # Targets is all the args after the first
 # Get secrets and put them in secrets/
 # (where the Dockerfile looks for them)
 HERE=${BASH_SOURCE%/*}
+
+# Fail early if more setup is needed
+${HERE}/bb8_link_verify
+
 source ${HERE}/vault_auth.sh
 
 function delete_secrets {
@@ -28,20 +32,6 @@ docker build --build-arg "TARGETS=$targets" --tag bb8 .
 docker volume create bb8_ssh
 docker volume create bb8_logs
 ${HERE}/bb8 init
-
-# Setup link
-path=$(realpath ${HERE}/bb8)
-link_path=/usr/local/bin/bb8
-link_status=""
-
-if [ -L $link_path ]; then
-    link_status=$(readlink -- $link_path)
-fi
-
-if [ "$link_status" != "$path"  ]; then
-    echo "Creating symlink at $link_path"
-    ln -sf $path $link_path
-fi
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
