@@ -34,12 +34,12 @@ function delete_secrets {
     rm -rf "$PATH_SECRETS"
 }
 trap delete_secrets SIGINT EXIT
-${HERE}/obtain_secrets.py "$PATH_SECRETS"
+"${HERE}/obtain_secrets.py" "$PATH_SECRETS"
 
 # Copy config
-cp "$source_config_path" source-config.json
+cp "$source_config_path" "$HERE/source-config.json"
 
-docker build --build-arg "TARGETS=$targets" --tag bb8 $HERE
+docker build --build-arg "TARGETS=$targets" --tag bb8 "$HERE"
 docker volume create bb8_ssh
 docker volume create bb8_logs
 ${HERE}/bb8 init
