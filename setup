@@ -30,7 +30,7 @@ source ${HERE}/vault_auth.sh
 
 function delete_secrets {
     set +e
-    rm -r ${HERE}/secrets
+    rm -rf ${HERE}/secrets
 }
 trap delete_secrets SIGINT EXIT
 ${HERE}/obtain_secrets.py
@@ -38,7 +38,7 @@ ${HERE}/obtain_secrets.py
 # Copy config
 cp "$source_config_path" source-config.json
 
-docker build --build-arg "TARGETS=$targets" --tag bb8 .
+docker build --build-arg "TARGETS=$targets" --tag bb8 $HERE
 docker volume create bb8_ssh
 docker volume create bb8_logs
 ${HERE}/bb8 init
