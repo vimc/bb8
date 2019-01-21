@@ -22,6 +22,7 @@ shift && targets="$@"   # Targets is all the args after the first
 # Get secrets and put them in secrets/
 # (where the Dockerfile looks for them)
 HERE=${BASH_SOURCE%/*}
+PATH_SECRETS="${HERE}/secrets"
 
 # Fail early if more setup is needed
 ${HERE}/bb8_link_verify
@@ -30,10 +31,10 @@ source ${HERE}/vault_auth.sh
 
 function delete_secrets {
     set +e
-    rm -rf ${HERE}/secrets
+    rm -rf "$PATH_SECRETS"
 }
 trap delete_secrets SIGINT EXIT
-${HERE}/obtain_secrets.py
+${HERE}/obtain_secrets.py "$PATH_SECRETS"
 
 # Copy config
 cp "$source_config_path" source-config.json
