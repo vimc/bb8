@@ -12,6 +12,11 @@ if [[ ($# -eq 0) ]]; then
 fi
 
 source_config_path=$1
+if [ ! -f $source_config_path ]; then
+    echo "Configuration file $1 not found"
+    exit 1
+fi
+
 shift && targets="$@"   # Targets is all the args after the first
 
 # Get secrets and put them in secrets/
