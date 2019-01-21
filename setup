@@ -47,4 +47,6 @@ echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
 echo "backup:           Run bb8 backup"
 echo "restore:          Run bb8 restore"
-echo "schedule backups: Run sudo ${HERE}/schedule"
+if [ ! -f /etc/cron.hourly/bb8 ]; then
+    echo "schedule backups: Run sudo ${HERE}/schedule"
+fi
