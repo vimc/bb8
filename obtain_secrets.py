@@ -40,5 +40,5 @@ def obtain_secrets(secrets_dir):
 if __name__ == "__main__":
     print("Obtaining secrets from the vault. If you are not authenticated "
           "with the vault, this will fail.")
-    args = docopt.docopt(__doc__)
+    args = docopt(__doc__)
     obtain_secrets(args["<path>"])
