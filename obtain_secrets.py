@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
+"""
+Usage: obtain_secrets <path>
+"""
 
 import os
 from subprocess import check_output
 
+from docopt import docopt
 from os.path import join, isdir
-
-secrets_dir = "secrets"
-ssh_key_path = join(secrets_dir, "ssh_key")
-host_key_path = join(secrets_dir, "host_key")
 
 
 def get_secret(name):
@@ -23,14 +23,22 @@ def save_securely(path, data):
         f.write(data)
 
 
-if __name__ == "__main__":
-    print("Obtaining secrets from the vault. If you are not authenticated "
-          "with the vault, this will fail.")
+def obtain_secrets(secrets_dir):
     if not isdir(secrets_dir):
         os.mkdir(secrets_dir)
+
+    ssh_key_path = join(secrets_dir, "ssh_key")
+    host_key_path = join(secrets_dir, "host_key")
 
     ssh_key = get_secret("annex/id_rsa")
     host_key = get_secret("annex/host_key")
 
     save_securely(ssh_key_path, ssh_key)
     save_securely(host_key_path, host_key)
+
+
+if __name__ == "__main__":
+    print("Obtaining secrets from the vault. If you are not authenticated "
+          "with the vault, this will fail.")
+    args = docopt(__doc__)
+    obtain_secrets(args["<path>"])

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -e
+
+# Setup link
+HERE=${BASH_SOURCE%/*}
+bb8_path=$(realpath ${HERE}/bb8)
+link_path=/usr/local/bin/bb8
+
+if [ ! -L $link_path ]; then
+    echo "bb8 symlink needs to be created.  Please run:"
+    echo "    sudo $HERE/bb8_link_write"
+    echo "to create it, then retry"
+    exit 1
+fi
+
+link_status=$(readlink -- $link_path)
+if [ "$link_status" != "$bb8_path"  ]; then
+    echo "bb8 symlink exists at:"
+    echo "    $link_path"
+    echo "but it points at an unexpected location:"
+    echo "    $link_status"
+    echo "rather than:"
+    echo "    $bb8_path"
+    echo "Please run:"
+    echo "    sudo $HERE/bb8_link_write"
+    echo "to reconfigure it, then retry"
+    exit 1
+fi
+
+echo "bb8 is ready for takeoff!"

@@ -1,50 +1,53 @@
 #!/usr/bin/env bash
 set -e
 
+if [[ $EUID -eq 0 ]]; then
+    echo "This script must be run as a normal user, not as root/sudo"
+    exit 1
+fi
+
 if [[ ($# -eq 0) ]]; then
     echo "Usage: ./setup PATH_TO_SOURCE_CONFIG [TARGET ...]"
     exit -1;
 fi
 
 source_config_path=$1
+if [ ! -f $source_config_path ]; then
+    echo "Configuration file $1 not found"
+    exit 1
+fi
+
 shift && targets="$@"   # Targets is all the args after the first
 
 # Get secrets and put them in secrets/
 # (where the Dockerfile looks for them)
 HERE=${BASH_SOURCE%/*}
+PATH_SECRETS="${HERE}/secrets"
+
+# Fail early if more setup is needed
+${HERE}/bb8_link_verify
+
 source ${HERE}/vault_auth.sh
 
 function delete_secrets {
     set +e
-    rm -r ${HERE}/secrets
+    rm -rf "$PATH_SECRETS"
 }
 trap delete_secrets SIGINT EXIT
-${HERE}/obtain_secrets.py
+"${HERE}/obtain_secrets.py" "$PATH_SECRETS"
 
 # Copy config
-cp "$source_config_path" source-config.json
+cp "$source_config_path" "$HERE/source-config.json"
 
-docker build --build-arg "TARGETS=$targets" --tag bb8 .
+docker build --build-arg "TARGETS=$targets" --tag bb8 "$HERE"
 docker volume create bb8_ssh
 docker volume create bb8_logs
 ${HERE}/bb8 init
-
-# Setup link
-path=$(realpath ${HERE}/bb8)
-link_path=/usr/local/bin/bb8
-link_status=""
-
-if [ -L $link_path ]; then
-    link_status=$(readlink -- $link_path)
-fi
-
-if [ "$link_status" != "$path"  ]; then
-    echo "Creating symlink at $link_path"
-    ln -sf $path $link_path
-fi
 
 echo "-----------------------------------------------"
 echo "Setup complete. You can now: "
 echo "backup:           Run bb8 backup"
 echo "restore:          Run bb8 restore"
-echo "schedule backups: Run sudo ./schedule"
+if [ ! -f /etc/cron.hourly/bb8 ]; then
+    echo "schedule backups: Run sudo ${HERE}/schedule"
+fi
