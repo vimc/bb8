@@ -79,12 +79,17 @@ Note: Montagu specific setup instructions here: https://github.com/vimc/montagu-
 If setting up Montagu backup, follow those instructions first. Then, from this directory:
 
 ```
+sudo ./bb8_link_write
 ./setup PATH_TO_SOURCE_CONFIG [TARGET ...]
 ```
 
-This builds a new docker image. It includes the source config, filtered to 
-the requested targets, and the SSL secrets from the Vault. For this reason, 
-it is important that you do not push this image to any remote registry.
+The first step builds a symlink to this directory so that `bb8` is on
+the path and interacts with the configurations based here.
+
+The second command builds a new docker image. It includes the source
+config, filtered to the requested targets, and the SSL secrets from
+the Vault. For this reason, it is important that you do not push this
+image to any remote registry.
 
 Once the docker image is built, the setup script also creates required 
 volumes for bb8, and invokes the built image to dump out the SSH key and 
