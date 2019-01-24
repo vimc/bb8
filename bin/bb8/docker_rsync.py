@@ -67,11 +67,12 @@ class DockerRsync(object):
                 self._run_rsync(volumes, from_path, to_path, relative)
                 done = True
             except RsyncError as e:
-                print(str(e))
+                print(str(e), flush=True)
                 attempts += 1
-                if attempts > restarts:
+                if attempts >= restarts:
                     raise Exception("rsync failed too many times")
-                print("trying again... {}/{}".format(attempts, restarts))
+                print("trying again... {}/{}".format(attempts, restarts),
+                      flush=True)
 
     def _get_volume_args(self, local_volume, volume_mode):
         mounted_volume = join("/", local_volume)
