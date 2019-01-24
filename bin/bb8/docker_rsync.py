@@ -69,7 +69,7 @@ class DockerRsync(object):
             except RsyncError as e:
                 print(str(e), flush=True)
                 attempts += 1
-                if attempts >= restarts:
+                if attempts > restarts:
                     raise Exception("rsync failed too many times")
                 print("trying again... {}/{}".format(attempts, restarts),
                       flush=True)
