@@ -49,10 +49,29 @@ class DockerRsync(object):
 
         try:
             log_from_docker(container)
+            container.reload()
+            code = container.attrs["State"]["ExitCode"]
+            if code != 1:
+                raise RsyncError(code, container)
         except KeyboardInterrupt as e:
             logging.warning("Stopping container " + container.name)
             container.stop()
             raise e
+
+    def _run_rsync_with_restart(self, volumes, from_path, to_path, relative,
+                                restarts=5):
+        attempts = 1
+        done = False
+        while not done:
+            try:
+                self._run_rsync(volumes, from_path, to_path, relative)
+                done = True
+            except RsyncError as e:
+                print(str(e))
+                attempts += 1
+                if attempts > restarts:
+                    raise Exception("rsync failed too many times")
+                print("trying again... {}/{}".format(attempts, restarts))
 
     def _get_volume_args(self, local_volume, volume_mode):
         mounted_volume = join("/", local_volume)
@@ -78,3 +97,10 @@ class DockerRsync(object):
         logging.info("Restoring from {} to {}".format(remote_path,
                                                       local_volume))
         self._run_rsync(volumes, remote_path, mounted_volume, relative=False)
+
+
+class RsyncError(Exception):
+    def __init__(self, code, container):
+        super().__init__("Rsync failed with code {}".format(code))
+        self.code = code
+        self.container = container
