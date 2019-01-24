@@ -86,7 +86,8 @@ class DockerRsync(object):
 
         logging.info("Backing up to {} from {}".format(remote_path,
                                                        local_volume))
-        self._run_rsync(volumes, local_volume, remote_path, relative=True)
+        self._run_rsync_with_restart(volumes, local_volume, remote_path,
+                                     relative=True)
 
     def restore_volume(self, local_volume, remote_path):
         mounted_volume = join("/", local_volume)
@@ -96,7 +97,8 @@ class DockerRsync(object):
 
         logging.info("Restoring from {} to {}".format(remote_path,
                                                       local_volume))
-        self._run_rsync(volumes, remote_path, mounted_volume, relative=False)
+        self._run_rsync_with_restart(volumes, remote_path, mounted_volume,
+                                     relative=False)
 
 
 class RsyncError(Exception):
