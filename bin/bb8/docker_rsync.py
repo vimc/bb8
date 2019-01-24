@@ -64,7 +64,7 @@ class DockerRsync(object):
         done = False
         while not done:
             try:
-                self._run_rsync(volumes, from_path, to_path, relative)
+                self._run_rsync(volumes, from_path, to_path, relative=relative)
                 done = True
             except RsyncError as e:
                 print(str(e), flush=True)
