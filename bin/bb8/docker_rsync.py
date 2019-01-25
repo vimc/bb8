@@ -51,7 +51,7 @@ class DockerRsync(object):
             log_from_docker(container)
             container.reload()
             code = container.attrs["State"]["ExitCode"]
-            if code != 1:
+            if code != 0:
                 raise RsyncError(code, container)
         except KeyboardInterrupt as e:
             logging.warning("Stopping container " + container.name)
