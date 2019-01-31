@@ -45,7 +45,7 @@ class DockerRsync(object):
         logging.debug("Volume mapping: " + str(volumes))
         container = self.client.containers.run("instrumentisto/rsync-ssh",
                                                command=cmd, volumes=volumes,
-                                               detach=True, remove=True)
+                                               detach=True)
 
         try:
             log_from_docker(container)
@@ -57,6 +57,8 @@ class DockerRsync(object):
             logging.warning("Stopping container " + container.name)
             container.stop()
             raise e
+        finally:
+            container.remove()
 
     def _run_rsync_with_restart(self, volumes, from_path, to_path, relative,
                                 restarts=5):
