@@ -1,0 +1,3 @@
+steps:
+  - label: ":mag: Run tests"
+    command: buildkite/test.sh
