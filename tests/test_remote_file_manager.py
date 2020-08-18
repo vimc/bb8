@@ -73,7 +73,7 @@ class TestRemoteFileManager(object):
         # Test
         expected_message = "This target has been backed up by a different " \
                            "instance of bb8: target"
-        with pytest.raises(Exception, message=expected_message):
+        with pytest.raises(Exception, match = expected_message):
             sut.validate_instance("local_guid")
 
     def test_validate_instance_passes_if_matched(self):
