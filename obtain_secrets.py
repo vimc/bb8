@@ -11,7 +11,7 @@ from os.path import join, isdir
 
 
 def get_secret(name):
-    path = "secret/{}".format(name)
+    path = "secret/vimc/{}".format(name)
     return check_output(["vault", "read", "-field=value", path]).decode('utf-8')
 
 
